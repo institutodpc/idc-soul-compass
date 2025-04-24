@@ -22,8 +22,8 @@ const UserRegistrationForm: React.FC<UserRegistrationFormProps> = ({ onSubmit })
     e.preventDefault();
     
     // Simple validation
-    if (!userData.name || !userData.email) {
-      toast.error("Por favor, preencha seu nome e email.");
+    if (!userData.name || !userData.email || !userData.whatsapp) {
+      toast.error("Por favor, preencha todos os campos.");
       return;
     }
 
@@ -31,6 +31,13 @@ const UserRegistrationForm: React.FC<UserRegistrationFormProps> = ({ onSubmit })
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(userData.email)) {
       toast.error("Por favor, insira um email válido.");
+      return;
+    }
+
+    // WhatsApp validation (basic Brazilian format)
+    const whatsappRegex = /^\d{10,11}$/;
+    if (!whatsappRegex.test(userData.whatsapp.replace(/\D/g, ''))) {
+      toast.error("Por favor, insira um número de WhatsApp válido (10 ou 11 dígitos).");
       return;
     }
 
@@ -70,13 +77,14 @@ const UserRegistrationForm: React.FC<UserRegistrationFormProps> = ({ onSubmit })
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="whatsapp">WhatsApp (opcional)</Label>
+        <Label htmlFor="whatsapp">WhatsApp</Label>
         <Input
           id="whatsapp"
           name="whatsapp"
           value={userData.whatsapp}
           onChange={handleChange}
           placeholder="(00) 00000-0000"
+          required
         />
       </div>
 

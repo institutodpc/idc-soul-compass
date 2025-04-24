@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useQuizContext } from "@/context/QuizContext";
 import { getQuestionById, getTotalQuestions } from "@/services/quizService";
@@ -10,6 +9,7 @@ import UserRegistrationForm from "@/components/UserRegistrationForm";
 import { User, Question } from "@/types/quiz";
 import ResultCard from "@/components/ResultCard";
 import Logo from "@/components/Logo";
+import WhatsAppInvite from "@/components/WhatsAppInvite";
 
 const Quiz: React.FC = () => {
   const {
@@ -35,16 +35,13 @@ const Quiz: React.FC = () => {
   const isLastQuestion = currentQuestionId === totalQuestions;
   const canGoNext = !!currentAnswer;
 
-  // Load question data
   useEffect(() => {
     const loadQuestionData = async () => {
       setIsLoading(true);
       try {
-        // Fetch total questions count
         const total = await getTotalQuestions();
         setTotalQuestions(total);
         
-        // Fetch current question
         const question = await getQuestionById(currentQuestionId);
         setCurrentQuestion(question || null);
       } catch (error) {
@@ -57,7 +54,6 @@ const Quiz: React.FC = () => {
     loadQuestionData();
   }, [currentQuestionId]);
 
-  // When all questions are answered, show registration form
   useEffect(() => {
     if (isLastQuestion && canGoNext && !showRegistration && !isCompleted) {
       setShowRegistration(true);
@@ -70,7 +66,27 @@ const Quiz: React.FC = () => {
     setShowRegistration(false);
   };
 
-  // Show result page if quiz is completed
+  if (showRegistration) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center p-4">
+        <Logo className="mb-8" />
+        
+        <QuizCard 
+          headerContent={
+            <div className="text-center">
+              <h2 className="text-2xl font-bold">Pronto para descobrir seu perfil?</h2>
+              <p className="text-muted-foreground mt-2">
+                Cadastre-se para ver seu resultado!
+              </p>
+            </div>
+          }
+        >
+          <UserRegistrationForm onSubmit={handleRegistrationSubmit} />
+        </QuizCard>
+      </div>
+    );
+  }
+
   if (isCompleted && result) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4">
@@ -100,34 +116,13 @@ const Quiz: React.FC = () => {
               </div>
             </>
           )}
+          
+          <WhatsAppInvite />
         </div>
       </div>
     );
   }
 
-  // Show registration form
-  if (showRegistration) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-4">
-        <Logo className="mb-8" />
-        
-        <QuizCard 
-          headerContent={
-            <div className="text-center">
-              <h2 className="text-2xl font-bold">Pronto para descobrir seu perfil?</h2>
-              <p className="text-muted-foreground mt-2">
-                Cadastre-se para ver seu resultado!
-              </p>
-            </div>
-          }
-        >
-          <UserRegistrationForm onSubmit={handleRegistrationSubmit} />
-        </QuizCard>
-      </div>
-    );
-  }
-
-  // Show loading state
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4">
@@ -139,7 +134,6 @@ const Quiz: React.FC = () => {
     );
   }
 
-  // Show the quiz question
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4">
       <Logo className="mb-8" />
