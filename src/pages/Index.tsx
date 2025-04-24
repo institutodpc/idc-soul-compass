@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import GradientButton from "@/components/GradientButton";
 import Logo from "@/components/Logo";
 import { useQuizContext } from "@/context/QuizContext";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -15,22 +15,15 @@ const Index = () => {
     const hasSavedProgress = localStorage.getItem("quizProgress") !== null;
     
     if (hasSavedProgress) {
-      toast({
-        description: "Você tem um quiz não finalizado",
-        action: (
-          <div className="flex space-x-2">
-            <GradientButton 
-              onClick={() => {
-                loadQuizProgress();
-                navigate("/quiz");
-              }}
-              variant="outline"
-              className="bg-white text-persona-pink border-persona-pink hover:bg-pink-50"
-            >
-              Continuar
-            </GradientButton>
-          </div>
-        ),
+      toast("Você tem um quiz não finalizado", {
+        description: "Deseja continuar de onde parou?",
+        action: {
+          label: "Continuar",
+          onClick: () => {
+            loadQuizProgress();
+            navigate("/quiz");
+          },
+        },
       });
     }
   }, [loadQuizProgress, navigate]);
