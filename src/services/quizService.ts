@@ -4,6 +4,7 @@ import { fetchProfiles, fetchProfileWeights, fetchQuestions } from "./supabaseSe
 
 let cachedProfiles: Profile[] | null = null;
 let cachedWeights: any[] | null = null;
+let cachedQuestions: any[] | null = null;
 
 // Calculate quiz results based on user answers
 export const calculateResults = async (answers: UserAnswer[]): Promise<QuizResult> => {
@@ -68,19 +69,22 @@ const getMaxPossibleScore = (profileId: number, weights: any[]): number => {
     .reduce((sum, weight) => sum + (weight.weight * 3), 0);
 };
 
-// Get all questions
+// Get all questions (with caching)
 export const getQuestions = async () => {
-  return await fetchQuestions();
+  if (!cachedQuestions) {
+    cachedQuestions = await fetchQuestions();
+  }
+  return cachedQuestions;
 };
 
 // Get a specific question by ID
 export const getQuestionById = async (id: number) => {
-  const questions = await fetchQuestions();
+  const questions = await getQuestions();
   return questions.find(q => q.id === id);
 };
 
 // Get total number of questions
 export const getTotalQuestions = async () => {
-  const questions = await fetchQuestions();
+  const questions = await getQuestions();
   return questions.length;
 };

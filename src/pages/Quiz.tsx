@@ -7,7 +7,7 @@ import ProgressBar from "@/components/ProgressBar";
 import QuizQuestion from "@/components/QuizQuestion";
 import QuizNavigation from "@/components/QuizNavigation";
 import UserRegistrationForm from "@/components/UserRegistrationForm";
-import { User } from "@/types/quiz";
+import { User, Question } from "@/types/quiz";
 import ResultCard from "@/components/ResultCard";
 import Logo from "@/components/Logo";
 
@@ -27,11 +27,35 @@ const Quiz: React.FC = () => {
   } = useQuizContext();
 
   const [showRegistration, setShowRegistration] = useState(false);
-  const totalQuestions = getTotalQuestions();
-  const currentQuestion = getQuestionById(currentQuestionId);
+  const [totalQuestions, setTotalQuestions] = useState<number>(0);
+  const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  
   const currentAnswer = answers.find(a => a.questionId === currentQuestionId);
   const isLastQuestion = currentQuestionId === totalQuestions;
   const canGoNext = !!currentAnswer;
+
+  // Load question data
+  useEffect(() => {
+    const loadQuestionData = async () => {
+      setIsLoading(true);
+      try {
+        // Fetch total questions count
+        const total = await getTotalQuestions();
+        setTotalQuestions(total);
+        
+        // Fetch current question
+        const question = await getQuestionById(currentQuestionId);
+        setCurrentQuestion(question || null);
+      } catch (error) {
+        console.error("Error loading question data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadQuestionData();
+  }, [currentQuestionId]);
 
   // When all questions are answered, show registration form
   useEffect(() => {
@@ -99,6 +123,18 @@ const Quiz: React.FC = () => {
         >
           <UserRegistrationForm onSubmit={handleRegistrationSubmit} />
         </QuizCard>
+      </div>
+    );
+  }
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center p-4">
+        <Logo className="mb-8" />
+        <div className="text-center">
+          <p className="text-lg">Carregando questão...</p>
+        </div>
       </div>
     );
   }

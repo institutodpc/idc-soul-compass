@@ -9,17 +9,28 @@ export const fetchQuestions = async (): Promise<Question[]> => {
     .select('*');
   
   if (error) throw error;
-  return data || [];
+  
+  // Map the data to match our Question type with proper category typing
+  return data.map(q => ({
+    id: q.id,
+    text: q.text || '',
+    category: q.category as Question['category']
+  })) || [];
 };
 
 // Save user answers
 export const saveAnswers = async (answers: UserAnswer[]): Promise<void> => {
+  const { data: { user } } = await supabase.auth.getUser();
+  const userId = user?.id;
+  
+  if (!userId) throw new Error("User is not authenticated");
+  
   const { error } = await supabase
     .from('answers')
     .insert(answers.map(answer => ({
       question_id: answer.questionId,
       value: answer.value,
-      user_id: supabase.auth.getUser().then(({ data }) => data.user?.id)
+      user_id: userId
     })));
   
   if (error) throw error;
@@ -27,10 +38,15 @@ export const saveAnswers = async (answers: UserAnswer[]): Promise<void> => {
 
 // Save user profile
 export const saveUserProfile = async (user: User): Promise<void> => {
+  const { data: { user: authUser } } = await supabase.auth.getUser();
+  const userId = authUser?.id || user.id;
+  
+  if (!userId) throw new Error("User is not authenticated");
+  
   const { error } = await supabase
     .from('users')
     .insert({
-      id: (await supabase.auth.getUser()).data.user?.id,
+      id: userId,
       nome: user.name,
       email: user.email,
       whatsapp: user.whatsapp
@@ -49,11 +65,11 @@ export const fetchProfiles = async (): Promise<Profile[]> => {
   
   return data.map(profile => ({
     id: profile.id,
-    name: profile.nome,
-    description: profile.descricao,
-    verse: profile.versiculo,
-    tip: profile.dica,
-    practice: profile.pratica
+    name: profile.nome || '',
+    description: profile.descricao || '',
+    verse: profile.versiculo || '',
+    tip: profile.dica || '',
+    practice: profile.pratica || ''
   })) || [];
 };
 
@@ -67,7 +83,7 @@ export const fetchProfileWeights = async (): Promise<QuestionWeight[]> => {
   
   return data.map(weight => ({
     questionId: weight.question_id,
-    profileId: weight.profile_id,
-    weight: weight.weight
+    profileId: weight.profile_id || 0,
+    weight: weight.weight || 0
   })) || [];
 };
