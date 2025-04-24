@@ -16,8 +16,7 @@ const Index = () => {
     
     if (hasSavedProgress) {
       toast({
-        title: "Você tem um quiz não finalizado",
-        description: "Deseja continuar de onde parou?",
+        description: "Você tem um quiz não finalizado",
         action: (
           <div className="flex space-x-2">
             <GradientButton 
