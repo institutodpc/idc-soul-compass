@@ -9,7 +9,117 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      answers: {
+        Row: {
+          created_at: string | null
+          id: string
+          question_id: number | null
+          user_id: string
+          value: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          question_id?: number | null
+          user_id: string
+          value?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          question_id?: number | null
+          user_id?: string
+          value?: number | null
+        }
+        Relationships: []
+      }
+      profile_weights: {
+        Row: {
+          profile_id: number | null
+          question_id: number
+          weight: number | null
+        }
+        Insert: {
+          profile_id?: number | null
+          question_id: number
+          weight?: number | null
+        }
+        Update: {
+          profile_id?: number | null
+          question_id?: number
+          weight?: number | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          descricao: string | null
+          dica: string | null
+          id: number
+          nome: string | null
+          pratica: string | null
+          versiculo: string | null
+        }
+        Insert: {
+          descricao?: string | null
+          dica?: string | null
+          id: number
+          nome?: string | null
+          pratica?: string | null
+          versiculo?: string | null
+        }
+        Update: {
+          descricao?: string | null
+          dica?: string | null
+          id?: number
+          nome?: string | null
+          pratica?: string | null
+          versiculo?: string | null
+        }
+        Relationships: []
+      }
+      questions: {
+        Row: {
+          category: string | null
+          id: number
+          text: string | null
+        }
+        Insert: {
+          category?: string | null
+          id: number
+          text?: string | null
+        }
+        Update: {
+          category?: string | null
+          id?: number
+          text?: string | null
+        }
+        Relationships: []
+      }
+      users: {
+        Row: {
+          created_at: string | null
+          email: string | null
+          id: string
+          nome: string
+          whatsapp: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          nome: string
+          whatsapp?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          nome?: string
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

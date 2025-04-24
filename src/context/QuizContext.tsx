@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { UserAnswer, QuizResult, User } from "@/types/quiz";
 import { calculateResults, getTotalQuestions } from "@/services/quizService";
+import { saveAnswers, saveUserProfile } from "@/services/supabaseService";
 import { toast } from "@/components/ui/sonner";
 
 interface QuizContextType {
@@ -42,7 +43,6 @@ export const QuizProvider: React.FC<QuizProviderProps> = ({ children }) => {
   const [result, setResult] = useState<QuizResult | null>(null);
   const [user, setUser] = useState<User | null>(null);
 
-  // Start or reset quiz
   const startQuiz = () => {
     setCurrentQuestionId(1);
     setAnswers([]);
@@ -50,7 +50,6 @@ export const QuizProvider: React.FC<QuizProviderProps> = ({ children }) => {
     setResult(null);
   };
 
-  // Answer the current question
   const answerQuestion = (questionId: number, value: number) => {
     const newAnswers = [...answers];
     const existingAnswerIndex = newAnswers.findIndex(a => a.questionId === questionId);
@@ -64,43 +63,47 @@ export const QuizProvider: React.FC<QuizProviderProps> = ({ children }) => {
     setAnswers(newAnswers);
   };
 
-  // Move to next question
-  const nextQuestion = () => {
-    if (currentQuestionId < getTotalQuestions()) {
+  const nextQuestion = async () => {
+    const total = await getTotalQuestions();
+    if (currentQuestionId < total) {
       setCurrentQuestionId(currentQuestionId + 1);
       saveQuizProgress();
     }
   };
 
-  // Move to previous question
   const prevQuestion = () => {
     if (currentQuestionId > 1) {
       setCurrentQuestionId(currentQuestionId - 1);
     }
   };
 
-  // Complete the quiz and calculate results
-  const completeQuiz = () => {
-    const quizResult = calculateResults(answers);
-    setResult(quizResult);
-    setIsCompleted(true);
-    
-    // Clear saved progress
-    localStorage.removeItem("quizProgress");
+  const completeQuiz = async () => {
+    try {
+      if (user) {
+        await saveUserProfile(user);
+        await saveAnswers(answers);
+      }
+      
+      const quizResult = await calculateResults(answers);
+      setResult(quizResult);
+      setIsCompleted(true);
+      localStorage.removeItem("quizProgress");
+      
+    } catch (error) {
+      console.error("Error completing quiz:", error);
+      toast.error("Erro ao salvar resultados");
+    }
   };
 
-  // Set user data
   const setUserData = (userData: User) => {
     setUser(userData);
   };
 
-  // Reset quiz to start
   const resetQuiz = () => {
     startQuiz();
     localStorage.removeItem("quizProgress");
   };
 
-  // Save quiz progress to localStorage
   const saveQuizProgress = () => {
     try {
       const progress = {
@@ -113,7 +116,6 @@ export const QuizProvider: React.FC<QuizProviderProps> = ({ children }) => {
     }
   };
 
-  // Load quiz progress from localStorage
   const loadQuizProgress = (): boolean => {
     try {
       const savedProgress = localStorage.getItem("quizProgress");
