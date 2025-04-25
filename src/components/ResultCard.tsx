@@ -3,6 +3,7 @@ import React from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Profile } from "@/types/quiz";
 import GradientButton from "@/components/GradientButton";
+import { RefreshCw } from "lucide-react";
 
 interface ResultCardProps {
   profile: Profile;
@@ -51,8 +52,9 @@ const ResultCard: React.FC<ResultCardProps> = ({ profile, isPrimary = false, onR
       
       {isPrimary && (
         <CardFooter className="flex justify-center pt-4">
-          <GradientButton onClick={onReset}>
-            Refazer Quiz
+          <GradientButton onClick={onReset} className="flex items-center gap-2">
+            <RefreshCw className="h-4 w-4" />
+            Refazer Meu Diagnóstico
           </GradientButton>
         </CardFooter>
       )}

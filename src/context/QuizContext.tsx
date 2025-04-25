@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { UserAnswer, QuizResult, User } from "@/types/quiz";
 import { calculateResults, getTotalQuestions } from "@/services/quizService";
@@ -50,24 +49,46 @@ export const QuizProvider: React.FC<QuizProviderProps> = ({ children }) => {
     setResult(null);
   };
 
-  const answerQuestion = (questionId: number, value: number) => {
+  const answerQuestion = async (questionId: number, value: number) => {
+    if (!user) {
+      toast.error("Por favor, registre-se antes de responder às perguntas.");
+      return;
+    }
+    
     const newAnswers = [...answers];
     const existingAnswerIndex = newAnswers.findIndex(a => a.questionId === questionId);
+    const answerValue = value as 0 | 1 | 2 | 3;
     
     if (existingAnswerIndex !== -1) {
-      newAnswers[existingAnswerIndex] = { questionId, value: value as 0 | 1 | 2 | 3 };
+      newAnswers[existingAnswerIndex] = { questionId, value: answerValue };
     } else {
-      newAnswers.push({ questionId, value: value as 0 | 1 | 2 | 3 });
+      newAnswers.push({ questionId, value: answerValue });
     }
     
     setAnswers(newAnswers);
+    
+    // Save this individual answer to Supabase
+    try {
+      await saveAnswers([{ questionId, value: answerValue }]);
+    } catch (error) {
+      console.error("Error saving answer to database:", error);
+      // We don't show error to user here to avoid disrupting UX
+      // The answer will still be saved locally
+    }
   };
 
   const nextQuestion = async () => {
-    const total = await getTotalQuestions();
-    if (currentQuestionId < total) {
-      setCurrentQuestionId(currentQuestionId + 1);
-      saveQuizProgress();
+    try {
+      const total = await getTotalQuestions();
+      if (currentQuestionId < total) {
+        setCurrentQuestionId(currentQuestionId + 1);
+        saveQuizProgress();
+      } else if (currentQuestionId === total) {
+        await completeQuiz();
+      }
+    } catch (error) {
+      console.error("Error moving to next question:", error);
+      toast.error("Erro ao avançar para a próxima pergunta.");
     }
   };
 
@@ -79,19 +100,26 @@ export const QuizProvider: React.FC<QuizProviderProps> = ({ children }) => {
 
   const completeQuiz = async () => {
     try {
-      if (user) {
-        await saveUserProfile(user);
-        await saveAnswers(answers);
+      if (!user) {
+        toast.error("Por favor, registre-se antes de completar o quiz.");
+        return;
       }
+      
+      await saveUserProfile(user);
+      
+      // We save all answers again to ensure consistency
+      await saveAnswers(answers);
       
       const quizResult = await calculateResults(answers);
       setResult(quizResult);
       setIsCompleted(true);
       localStorage.removeItem("quizProgress");
       
+      toast.success("Resultados calculados com sucesso!");
+      
     } catch (error) {
       console.error("Error completing quiz:", error);
-      toast.error("Erro ao salvar resultados");
+      toast.error("Erro ao salvar resultados. Por favor, tente novamente.");
     }
   };
 
@@ -101,14 +129,19 @@ export const QuizProvider: React.FC<QuizProviderProps> = ({ children }) => {
 
   const resetQuiz = () => {
     startQuiz();
+    // We keep the user data for retaking the quiz
     localStorage.removeItem("quizProgress");
+    toast.info("Quiz reiniciado. Suas respostas anteriores serão substituídas.");
   };
 
   const saveQuizProgress = () => {
     try {
+      if (!user) return; // Don't save progress if no user
+      
       const progress = {
         currentQuestionId,
-        answers
+        answers,
+        user
       };
       localStorage.setItem("quizProgress", JSON.stringify(progress));
     } catch (error) {
@@ -120,9 +153,10 @@ export const QuizProvider: React.FC<QuizProviderProps> = ({ children }) => {
     try {
       const savedProgress = localStorage.getItem("quizProgress");
       if (savedProgress) {
-        const { currentQuestionId: savedQuestionId, answers: savedAnswers } = JSON.parse(savedProgress);
+        const { currentQuestionId: savedQuestionId, answers: savedAnswers, user: savedUser } = JSON.parse(savedProgress);
         setCurrentQuestionId(savedQuestionId);
         setAnswers(savedAnswers);
+        setUser(savedUser);
         toast.info("Progresso anterior carregado!");
         return true;
       }

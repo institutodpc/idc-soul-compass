@@ -31,7 +31,22 @@ export type Database = {
           user_id?: string
           value?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "answers_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "answers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profile_weights: {
         Row: {
@@ -125,7 +140,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      calcular_perfis: {
+        Args: { user_uuid: string }
+        Returns: {
+          profile_id: number
+          score_normalizado: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

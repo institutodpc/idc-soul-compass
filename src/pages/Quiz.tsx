@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useQuizContext } from "@/context/QuizContext";
 import { getQuestionById, getTotalQuestions } from "@/services/quizService";
@@ -26,7 +27,7 @@ const Quiz: React.FC = () => {
     resetQuiz,
   } = useQuizContext();
 
-  const [showRegistration, setShowRegistration] = useState(false);
+  const [showRegistration, setShowRegistration] = useState(true);
   const [totalQuestions, setTotalQuestions] = useState<number>(0);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -51,18 +52,13 @@ const Quiz: React.FC = () => {
       }
     };
     
-    loadQuestionData();
-  }, [currentQuestionId]);
-
-  useEffect(() => {
-    if (isLastQuestion && canGoNext && !showRegistration && !isCompleted) {
-      setShowRegistration(true);
+    if (!showRegistration) {
+      loadQuestionData();
     }
-  }, [isLastQuestion, canGoNext, showRegistration, isCompleted]);
+  }, [currentQuestionId, showRegistration]);
 
   const handleRegistrationSubmit = (userData: User) => {
     setUserData(userData);
-    completeQuiz();
     setShowRegistration(false);
   };
 
@@ -74,9 +70,9 @@ const Quiz: React.FC = () => {
         <QuizCard 
           headerContent={
             <div className="text-center">
-              <h2 className="text-2xl font-bold">Pronto para descobrir seu perfil?</h2>
+              <h2 className="text-2xl font-bold">Comece sua jornada de autodescoberta</h2>
               <p className="text-muted-foreground mt-2">
-                Cadastre-se para ver seu resultado!
+                Informe seus dados para iniciar o teste e descobrir seu perfil espiritual
               </p>
             </div>
           }
