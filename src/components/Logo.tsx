@@ -8,13 +8,13 @@ interface LogoProps {
 
 const Logo: React.FC<LogoProps> = ({ className = "", size = "medium" }) => {
   const sizeClasses = {
-    small: "h-8",
-    medium: "h-16",
-    large: "h-24",
+    small: "h-8 md:h-12",
+    medium: "h-12 md:h-16",
+    large: "h-16 md:h-24",
   };
 
   return (
-    <div className={`relative ${sizeClasses[size]} ${className}`}>
+    <div className={`flex justify-center items-center ${sizeClasses[size]} ${className}`}>
       <img 
         src="/lovable-uploads/e85aeb94-7dce-43c6-9d59-5950e7ef228e.png" 
         alt="IDC Persona.io Logo" 
