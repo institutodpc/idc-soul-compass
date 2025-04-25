@@ -4,32 +4,40 @@ import { useNavigate } from "react-router-dom";
 import GradientButton from "@/components/GradientButton";
 import Logo from "@/components/Logo";
 import { useQuizContext } from "@/context/QuizContext";
+import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import { Brain, Book, Heart, Users, Star, Shield } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
   const { startQuiz, loadQuizProgress } = useQuizContext();
+  const { user } = useAuth();
 
   useEffect(() => {
-    // Check if there's a saved quiz progress
-    const hasSavedProgress = localStorage.getItem("quizProgress") !== null;
-    
-    if (hasSavedProgress) {
-      toast("Você tem um quiz não finalizado", {
-        description: "Deseja continuar de onde parou?",
-        action: {
-          label: "Continuar",
-          onClick: () => {
-            loadQuizProgress();
-            navigate("/quiz");
+    if (user) {
+      // Check if there's a saved quiz progress
+      const hasSavedProgress = localStorage.getItem("quizProgress") !== null;
+      
+      if (hasSavedProgress) {
+        toast("Você tem um quiz não finalizado", {
+          description: "Deseja continuar de onde parou?",
+          action: {
+            label: "Continuar",
+            onClick: () => {
+              loadQuizProgress();
+              navigate("/quiz");
+            },
           },
-        },
-      });
+        });
+      }
     }
-  }, [loadQuizProgress, navigate]);
+  }, [loadQuizProgress, navigate, user]);
 
   const handleStartQuiz = () => {
+    if (!user) {
+      navigate("/auth");
+      return;
+    }
     startQuiz();
     navigate("/quiz");
   };
@@ -67,7 +75,9 @@ const Index = () => {
         
         <div className="space-y-4 max-w-2xl mx-auto px-4">
           <p className="text-lg sm:text-xl text-gray-700">
-            <span className="font-semibold">Você está vivendo como um crente... ou como um verdadeiro cristão?</span>
+            <span className="font-semibold">
+              {user ? 'Pronto para descobrir seu perfil espiritual?' : 'Você está vivendo como um crente... ou como um verdadeiro cristão?'}
+            </span>
           </p>
           
           <p className="text-base sm:text-lg text-gray-600">
@@ -81,7 +91,7 @@ const Index = () => {
             size="lg"
             className="text-base sm:text-lg px-6 sm:px-10 py-4 sm:py-6 animate-pulse"
           >
-            Descobrir Agora
+            {user ? 'Iniciar Quiz' : 'Fazer Login para Começar'}
           </GradientButton>
         </div>
         
@@ -94,3 +104,4 @@ const Index = () => {
 };
 
 export default Index;
+
