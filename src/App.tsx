@@ -5,8 +5,10 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { QuizProvider } from "./context/QuizContext";
+import { AuthProvider } from "./context/AuthContext";
 import Index from "./pages/Index";
 import Quiz from "./pages/Quiz";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -17,13 +19,16 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <QuizProvider>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/quiz" element={<Quiz />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </QuizProvider>
+        <AuthProvider>
+          <QuizProvider>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/quiz" element={<Quiz />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </QuizProvider>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

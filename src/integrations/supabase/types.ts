@@ -111,6 +111,39 @@ export type Database = {
         }
         Relationships: []
       }
+      user_profiles: {
+        Row: {
+          created_at: string | null
+          email: string | null
+          id: string
+          last_quiz_date: string | null
+          name: string
+          quiz_count: number | null
+          updated_at: string | null
+          whatsapp: string
+        }
+        Insert: {
+          created_at?: string | null
+          email?: string | null
+          id: string
+          last_quiz_date?: string | null
+          name: string
+          quiz_count?: number | null
+          updated_at?: string | null
+          whatsapp: string
+        }
+        Update: {
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          last_quiz_date?: string | null
+          name?: string
+          quiz_count?: number | null
+          updated_at?: string | null
+          whatsapp?: string
+        }
+        Relationships: []
+      }
       users: {
         Row: {
           created_at: string | null
