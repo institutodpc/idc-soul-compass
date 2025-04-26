@@ -4,6 +4,7 @@ import { UserAnswer, QuizResult, User } from "@/types/quiz";
 import { calculateResults, getTotalQuestions } from "@/services/quizService";
 import { saveAnswers, saveUserProfile } from "@/services/supabaseService";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface QuizContextType {
   currentQuestionId: number;
@@ -15,7 +16,7 @@ interface QuizContextType {
   answerQuestion: (questionId: number, value: number) => void;
   nextQuestion: () => void;
   prevQuestion: () => void;
-  completeQuiz: () => void;
+  completeQuiz: () => Promise<void>;
   setUserData: (userData: User) => void;
   resetQuiz: () => void;
   saveQuizProgress: () => void;
@@ -40,7 +41,7 @@ export const QuizProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const answerQuestion = async (questionId: number, value: number) => {
     if (!user) {
-      toast.error("Por favor, registre-se antes de responder às perguntas.");
+      toast.error("Por favor, faça login antes de responder às perguntas.");
       return;
     }
     
@@ -69,8 +70,6 @@ export const QuizProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const total = await getTotalQuestions();
       if (currentQuestionId < total) {
         setCurrentQuestionId(currentQuestionId + 1);
-      } else if (currentQuestionId === total) {
-        await completeQuiz();
       }
     } catch (error) {
       console.error("Error moving to next question:", error);
@@ -86,24 +85,39 @@ export const QuizProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const completeQuiz = async () => {
     try {
-      if (!user) {
-        toast.error("Por favor, registre-se antes de completar o quiz.");
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      
+      if (!authUser) {
+        toast.error("Por favor, faça login antes de completar o quiz.");
         return;
       }
       
-      await saveUserProfile(user);
+      // Save the current user profile data if available
+      if (user) {
+        await saveUserProfile(user);
+      }
+      
+      // Save all answers to ensure everything is up-to-date
       await saveAnswers(answers);
       
-      const quizResult = await calculateResults(answers);
-      setResult(quizResult);
+      // Call the RPC function to calculate profiles
+      const { data: profileResults, error: rpcError } = await supabase
+        .rpc('calcular_perfis', { user_uuid: authUser.id });
+        
+      if (rpcError) {
+        throw rpcError;
+      }
+      
       setIsCompleted(true);
       localStorage.removeItem("quizProgress");
       
       toast.success("Quiz concluído com sucesso!");
+      return;
       
     } catch (error) {
       console.error("Error completing quiz:", error);
       toast.error("Erro ao salvar resultados. Por favor, tente novamente.");
+      throw error;
     }
   };
 

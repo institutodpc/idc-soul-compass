@@ -10,6 +10,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Index from "./pages/Index";
 import Quiz from "./pages/Quiz";
 import Auth from "./pages/Auth";
+import Result from "./pages/Result";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,14 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <Quiz />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/result" 
+                element={
+                  <ProtectedRoute>
+                    <Result />
                   </ProtectedRoute>
                 } 
               />

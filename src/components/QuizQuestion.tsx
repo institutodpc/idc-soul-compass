@@ -3,13 +3,6 @@ import React from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Question, UserAnswer } from "@/types/quiz";
-import { 
-  Heart, 
-  Book, 
-  Brain, 
-  Users, 
-  SmilePlus 
-} from "lucide-react";
 
 interface QuizQuestionProps {
   question: Question;
@@ -25,28 +18,9 @@ const QuizQuestion: React.FC<QuizQuestionProps> = ({ question, answer, onAnswer 
     { value: 3, label: "Sempre" }
   ];
 
-  // Get icon based on category
-  const getIcon = () => {
-    switch(question.category) {
-      case "Comportamento Pessoal":
-        return <Brain className="h-6 w-6 text-purple-500" />;
-      case "Espiritualidade e Práticas Religiosas":
-        return <Book className="h-6 w-6 text-blue-500" />;
-      case "Atitudes em relação aos outros":
-        return <Users className="h-6 w-6 text-green-500" />;
-      case "Saúde emocional e mental":
-        return <SmilePlus className="h-6 w-6 text-orange-500" />;
-      case "Relacionamentos":
-        return <Heart className="h-6 w-6 text-red-500" />;
-      default:
-        return null;
-    }
-  };
-
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center justify-center gap-3 mb-6">
-        {getIcon()}
+      <div className="mb-6">
         <h2 className="text-xl font-medium text-center">{question.text}</h2>
       </div>
       

@@ -1,33 +1,30 @@
 
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useQuizContext } from "@/context/QuizContext";
 import { getQuestionById, getTotalQuestions } from "@/services/quizService";
+import { useAuth } from "@/context/AuthContext";
 import QuizCard from "@/components/QuizCard";
 import ProgressBar from "@/components/ProgressBar";
 import QuizQuestion from "@/components/QuizQuestion";
 import QuizNavigation from "@/components/QuizNavigation";
-import UserRegistrationForm from "@/components/UserRegistrationForm";
-import { User, Question } from "@/types/quiz";
-import ResultCard from "@/components/ResultCard";
+import { Question } from "@/types/quiz";
 import Logo from "@/components/Logo";
-import WhatsAppInvite from "@/components/WhatsAppInvite";
 
 const Quiz: React.FC = () => {
+  const navigate = useNavigate();
   const {
     currentQuestionId,
     answers,
-    isCompleted,
-    result,
-    user,
     answerQuestion,
     nextQuestion,
     prevQuestion,
     completeQuiz,
-    setUserData,
-    resetQuiz,
+    loadQuizProgress,
   } = useQuizContext();
+  
+  const { user } = useAuth();
 
-  const [showRegistration, setShowRegistration] = useState(true);
   const [totalQuestions, setTotalQuestions] = useState<number>(0);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -37,6 +34,19 @@ const Quiz: React.FC = () => {
   const canGoNext = !!currentAnswer;
 
   useEffect(() => {
+    // If no user, redirect to auth page
+    if (!user) {
+      navigate("/auth");
+      return;
+    }
+
+    // Try to load saved progress
+    const hasSavedProgress = localStorage.getItem("quizProgress") !== null;
+    if (hasSavedProgress) {
+      loadQuizProgress();
+    }
+
+    // Load question data
     const loadQuestionData = async () => {
       setIsLoading(true);
       try {
@@ -52,72 +62,13 @@ const Quiz: React.FC = () => {
       }
     };
     
-    if (!showRegistration) {
-      loadQuestionData();
-    }
-  }, [currentQuestionId, showRegistration]);
+    loadQuestionData();
+  }, [currentQuestionId, navigate, user, loadQuizProgress]);
 
-  const handleRegistrationSubmit = (userData: User) => {
-    setUserData(userData);
-    setShowRegistration(false);
+  const handleCompleteQuiz = async () => {
+    await completeQuiz();
+    navigate("/result");
   };
-
-  if (showRegistration) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-4">
-        <Logo className="mb-8" />
-        
-        <QuizCard 
-          headerContent={
-            <div className="text-center">
-              <h2 className="text-2xl font-bold">Comece sua jornada de autodescoberta</h2>
-              <p className="text-muted-foreground mt-2">
-                Informe seus dados para iniciar o teste e descobrir seu perfil espiritual
-              </p>
-            </div>
-          }
-        >
-          <UserRegistrationForm onSubmit={handleRegistrationSubmit} />
-        </QuizCard>
-      </div>
-    );
-  }
-
-  if (isCompleted && result) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-4">
-        <Logo className="mb-8" />
-        
-        <div className="w-full max-w-4xl space-y-8">
-          <ResultCard 
-            profile={result.primaryProfile} 
-            isPrimary={true} 
-            onReset={resetQuiz} 
-          />
-          
-          {result.secondaryProfiles.length > 0 && (
-            <>
-              <h3 className="text-xl font-semibold text-center mt-8 mb-4">
-                Seus perfis secundários são:
-              </h3>
-              
-              <div className="grid gap-6 md:grid-cols-2">
-                {result.secondaryProfiles.map((profile) => (
-                  <ResultCard 
-                    key={profile.id} 
-                    profile={profile} 
-                    onReset={resetQuiz} 
-                  />
-                ))}
-              </div>
-            </>
-          )}
-          
-          <WhatsAppInvite />
-        </div>
-      </div>
-    );
-  }
 
   if (isLoading) {
     return (
@@ -141,7 +92,6 @@ const Quiz: React.FC = () => {
               <ProgressBar currentStep={currentQuestionId} totalSteps={totalQuestions} />
               <div className="flex justify-between text-sm text-muted-foreground">
                 <span>Pergunta {currentQuestionId} de {totalQuestions}</span>
-                <span>{currentQuestion.category}</span>
               </div>
             </div>
           }
@@ -149,6 +99,7 @@ const Quiz: React.FC = () => {
             <QuizNavigation
               onNext={nextQuestion}
               onPrev={prevQuestion}
+              onComplete={handleCompleteQuiz}
               canGoNext={canGoNext}
               isLastQuestion={isLastQuestion}
             />
