@@ -28,6 +28,7 @@ const Quiz: React.FC = () => {
   const [totalQuestions, setTotalQuestions] = useState<number>(0);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [hasAttemptedToLoadProgress, setHasAttemptedToLoadProgress] = useState<boolean>(false);
   
   const currentAnswer = answers.find(a => a.questionId === currentQuestionId);
   const isLastQuestion = currentQuestionId === totalQuestions;
@@ -40,10 +41,13 @@ const Quiz: React.FC = () => {
       return;
     }
 
-    // Try to load saved progress
-    const hasSavedProgress = localStorage.getItem("quizProgress") !== null;
-    if (hasSavedProgress) {
-      loadQuizProgress();
+    // Try to load saved progress only once
+    if (!hasAttemptedToLoadProgress) {
+      const hasSavedProgress = localStorage.getItem("quizProgress") !== null;
+      if (hasSavedProgress) {
+        loadQuizProgress();
+      }
+      setHasAttemptedToLoadProgress(true);
     }
 
     // Load question data
@@ -63,11 +67,15 @@ const Quiz: React.FC = () => {
     };
     
     loadQuestionData();
-  }, [currentQuestionId, navigate, user, loadQuizProgress]);
+  }, [currentQuestionId, navigate, user, loadQuizProgress, hasAttemptedToLoadProgress]);
 
   const handleCompleteQuiz = async () => {
-    await completeQuiz();
-    navigate("/result");
+    try {
+      await completeQuiz();
+      navigate("/result");
+    } catch (error) {
+      console.error("Error completing quiz:", error);
+    }
   };
 
   if (isLoading) {

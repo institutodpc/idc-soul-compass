@@ -31,6 +31,7 @@ export const QuizProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
   const [result, setResult] = useState<QuizResult | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [hasLoadedProgress, setHasLoadedProgress] = useState<boolean>(false);
 
   const startQuiz = () => {
     setCurrentQuestionId(1);
@@ -148,12 +149,18 @@ export const QuizProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const loadQuizProgress = (): boolean => {
     try {
+      // Only attempt to load progress once per session
+      if (hasLoadedProgress) {
+        return false;
+      }
+      
       const savedProgress = localStorage.getItem("quizProgress");
       if (savedProgress) {
         const { currentQuestionId: savedQuestionId, answers: savedAnswers, user: savedUser } = JSON.parse(savedProgress);
         setCurrentQuestionId(savedQuestionId);
         setAnswers(savedAnswers);
         setUser(savedUser);
+        setHasLoadedProgress(true);
         toast.info("Progresso anterior carregado!");
         return true;
       }

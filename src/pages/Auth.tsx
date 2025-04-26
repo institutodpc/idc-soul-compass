@@ -5,8 +5,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import LoginForm from '@/components/auth/LoginForm';
 import SignUpForm from '@/components/auth/SignUpForm';
 import Logo from '@/components/Logo';
+import { useAuth } from '@/context/AuthContext';
+import { Navigate } from 'react-router-dom';
 
 const Auth = () => {
+  const { user } = useAuth();
+  
+  // Redirect to quiz if already logged in
+  if (user) {
+    return <Navigate to="/quiz" replace />;
+  }
+  
   return (
     <div className="min-h-screen flex flex-col items-center justify-start p-4 sm:p-6 bg-gradient-to-br from-white to-blue-50">
       <Logo className="mb-8" />

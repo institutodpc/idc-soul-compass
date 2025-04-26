@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Profile } from "@/types/quiz";
 import { toast } from "sonner";
@@ -8,6 +8,7 @@ import ResultCard from "@/components/ResultCard";
 import Logo from "@/components/Logo";
 import WhatsAppInvite from "@/components/WhatsAppInvite";
 import { useAuth } from "@/context/AuthContext";
+import GradientButton from "@/components/GradientButton";
 
 interface ProfileResult {
   profile_id: number;
@@ -17,7 +18,6 @@ interface ProfileResult {
 const Result = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
   const [primaryProfile, setPrimaryProfile] = useState<Profile | null>(null);
   const [secondaryProfiles, setSecondaryProfiles] = useState<Profile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -106,12 +106,19 @@ const Result = () => {
       <Logo className="mb-8" />
       
       <div className="w-full max-w-4xl space-y-8">
-        {primaryProfile && (
+        {primaryProfile ? (
           <ResultCard 
             profile={primaryProfile} 
             isPrimary={true} 
             onReset={() => navigate("/quiz")} 
           />
+        ) : (
+          <div className="text-center p-6">
+            <p className="text-lg text-red-500">Não foi possível encontrar seu perfil principal.</p>
+            <GradientButton onClick={() => navigate("/quiz")} className="mt-4">
+              Refazer Quiz
+            </GradientButton>
+          </div>
         )}
         
         {secondaryProfiles.length > 0 && (
