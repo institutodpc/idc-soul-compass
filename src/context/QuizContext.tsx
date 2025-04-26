@@ -1,8 +1,9 @@
+
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { UserAnswer, QuizResult, User } from "@/types/quiz";
 import { calculateResults, getTotalQuestions } from "@/services/quizService";
 import { saveAnswers, saveUserProfile } from "@/services/supabaseService";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
 
 interface QuizContextType {
   currentQuestionId: number;
@@ -23,19 +24,7 @@ interface QuizContextType {
 
 const QuizContext = createContext<QuizContextType | undefined>(undefined);
 
-export const useQuizContext = () => {
-  const context = useContext(QuizContext);
-  if (!context) {
-    throw new Error("useQuizContext must be used within a QuizProvider");
-  }
-  return context;
-};
-
-interface QuizProviderProps {
-  children: ReactNode;
-}
-
-export const QuizProvider: React.FC<QuizProviderProps> = ({ children }) => {
+export const QuizProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [currentQuestionId, setCurrentQuestionId] = useState<number>(1);
   const [answers, setAnswers] = useState<UserAnswer[]>([]);
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
@@ -66,14 +55,12 @@ export const QuizProvider: React.FC<QuizProviderProps> = ({ children }) => {
     }
     
     setAnswers(newAnswers);
+    saveQuizProgress();
     
-    // Save this individual answer to Supabase
     try {
       await saveAnswers([{ questionId, value: answerValue }]);
     } catch (error) {
-      console.error("Error saving answer to database:", error);
-      // We don't show error to user here to avoid disrupting UX
-      // The answer will still be saved locally
+      console.error("Error saving answer:", error);
     }
   };
 
@@ -82,7 +69,6 @@ export const QuizProvider: React.FC<QuizProviderProps> = ({ children }) => {
       const total = await getTotalQuestions();
       if (currentQuestionId < total) {
         setCurrentQuestionId(currentQuestionId + 1);
-        saveQuizProgress();
       } else if (currentQuestionId === total) {
         await completeQuiz();
       }
@@ -106,8 +92,6 @@ export const QuizProvider: React.FC<QuizProviderProps> = ({ children }) => {
       }
       
       await saveUserProfile(user);
-      
-      // We save all answers again to ensure consistency
       await saveAnswers(answers);
       
       const quizResult = await calculateResults(answers);
@@ -115,7 +99,7 @@ export const QuizProvider: React.FC<QuizProviderProps> = ({ children }) => {
       setIsCompleted(true);
       localStorage.removeItem("quizProgress");
       
-      toast.success("Resultados calculados com sucesso!");
+      toast.success("Quiz concluído com sucesso!");
       
     } catch (error) {
       console.error("Error completing quiz:", error);
@@ -129,14 +113,13 @@ export const QuizProvider: React.FC<QuizProviderProps> = ({ children }) => {
 
   const resetQuiz = () => {
     startQuiz();
-    // We keep the user data for retaking the quiz
     localStorage.removeItem("quizProgress");
     toast.info("Quiz reiniciado. Suas respostas anteriores serão substituídas.");
   };
 
   const saveQuizProgress = () => {
     try {
-      if (!user) return; // Don't save progress if no user
+      if (!user) return;
       
       const progress = {
         currentQuestionId,
@@ -185,4 +168,12 @@ export const QuizProvider: React.FC<QuizProviderProps> = ({ children }) => {
   };
 
   return <QuizContext.Provider value={value}>{children}</QuizContext.Provider>;
+};
+
+export const useQuizContext = () => {
+  const context = useContext(QuizContext);
+  if (!context) {
+    throw new Error("useQuizContext must be used within a QuizProvider");
+  }
+  return context;
 };

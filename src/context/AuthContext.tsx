@@ -57,7 +57,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (error) throw error;
       toast.success('Conta criada com sucesso!');
-      navigate('/quiz');
+      navigate('/');
     } catch (error: any) {
       toast.error(error.message);
     }
@@ -72,7 +72,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (error) throw error;
       toast.success('Login realizado com sucesso!');
-      navigate('/dashboard');
+      navigate('/');
     } catch (error: any) {
       toast.error(error.message);
     }

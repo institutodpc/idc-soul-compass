@@ -125,7 +125,7 @@ export type Database = {
         Insert: {
           created_at?: string | null
           email?: string | null
-          id: string
+          id?: string
           last_quiz_date?: string | null
           name: string
           quiz_count?: number | null
