@@ -12,21 +12,25 @@ const Auth = () => {
       <Logo className="mb-8" />
       
       <Card className="w-full max-w-md p-6">
-        <Tabs defaultValue="login" className="w-full">
+        <Tabs defaultValue="signup" className="w-full">
           <TabsList className="grid w-full grid-cols-2 mb-6">
-            <TabsTrigger value="login">Entrar</TabsTrigger>
-            <TabsTrigger value="signup">Cadastrar</TabsTrigger>
+            <TabsTrigger value="signup" className="text-base">Cadastrar</TabsTrigger>
+            <TabsTrigger value="login" className="text-base">Entrar</TabsTrigger>
           </TabsList>
-          
-          <TabsContent value="login">
-            <LoginForm />
-          </TabsContent>
           
           <TabsContent value="signup">
             <SignUpForm />
           </TabsContent>
+          
+          <TabsContent value="login">
+            <LoginForm />
+          </TabsContent>
         </Tabs>
       </Card>
+
+      <p className="mt-6 text-sm text-gray-600 text-center max-w-md">
+        Cadastre-se para descobrir seu perfil espiritual e receber conteúdos exclusivos.
+      </p>
     </div>
   );
 };

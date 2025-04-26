@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { useAuth } from '@/context/AuthContext';
 import { Label } from '@/components/ui/label';
 import { formatPhoneNumber } from '@/lib/phoneFormatter';
+import { useNavigate } from 'react-router-dom';
 
 interface SignUpFormData {
   name: string;
@@ -16,10 +17,16 @@ interface SignUpFormData {
 
 const SignUpForm = () => {
   const { signUp } = useAuth();
+  const navigate = useNavigate();
   const { register, handleSubmit, formState: { isSubmitting }, setValue, watch } = useForm<SignUpFormData>();
 
   const onSubmit = async (data: SignUpFormData) => {
-    await signUp(data.email, data.password, data.name, data.whatsapp);
+    try {
+      await signUp(data.email, data.password, data.name, data.whatsapp);
+      navigate('/quiz');
+    } catch (error) {
+      console.error('Signup error:', error);
+    }
   };
 
   const handleWhatsAppChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,7 +37,7 @@ const SignUpForm = () => {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="name">Nome completo</Label>
+        <Label htmlFor="name">Nome completo*</Label>
         <Input
           id="name"
           {...register('name', { required: true })}
@@ -39,7 +46,7 @@ const SignUpForm = () => {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="email">Email*</Label>
         <Input
           id="email"
           type="email"
@@ -49,7 +56,7 @@ const SignUpForm = () => {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="password">Senha</Label>
+        <Label htmlFor="password">Senha*</Label>
         <Input
           id="password"
           type="password"
@@ -59,7 +66,7 @@ const SignUpForm = () => {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="whatsapp">WhatsApp</Label>
+        <Label htmlFor="whatsapp">WhatsApp*</Label>
         <Input
           id="whatsapp"
           {...register('whatsapp', { required: true })}
@@ -70,7 +77,7 @@ const SignUpForm = () => {
       </div>
 
       <Button type="submit" className="w-full" disabled={isSubmitting}>
-        {isSubmitting ? 'Cadastrando...' : 'Cadastrar'}
+        {isSubmitting ? 'Cadastrando...' : 'Criar Conta'}
       </Button>
     </form>
   );

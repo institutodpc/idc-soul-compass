@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/context/AuthContext';
 import { Label } from '@/components/ui/label';
+import { useNavigate } from 'react-router-dom';
 
 interface LoginFormData {
   email: string;
@@ -13,10 +14,16 @@ interface LoginFormData {
 
 const LoginForm = () => {
   const { signIn } = useAuth();
+  const navigate = useNavigate();
   const { register, handleSubmit, formState: { isSubmitting } } = useForm<LoginFormData>();
 
   const onSubmit = async (data: LoginFormData) => {
-    await signIn(data.email, data.password);
+    try {
+      await signIn(data.email, data.password);
+      navigate('/quiz');
+    } catch (error) {
+      console.error('Login error:', error);
+    }
   };
 
   return (
