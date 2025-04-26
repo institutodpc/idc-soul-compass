@@ -1,8 +1,6 @@
 
 import React from 'react';
 import { Card } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import LoginForm from '@/components/auth/LoginForm';
 import SignUpForm from '@/components/auth/SignUpForm';
 import Logo from '@/components/Logo';
 import { useAuth } from '@/context/AuthContext';
@@ -21,20 +19,8 @@ const Auth = () => {
       <Logo className="mb-8" />
       
       <Card className="w-full max-w-md p-6">
-        <Tabs defaultValue="signup" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6">
-            <TabsTrigger value="signup" className="text-base">Cadastrar</TabsTrigger>
-            <TabsTrigger value="login" className="text-base">Entrar</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="signup">
-            <SignUpForm />
-          </TabsContent>
-          
-          <TabsContent value="login">
-            <LoginForm />
-          </TabsContent>
-        </Tabs>
+        <h2 className="text-2xl font-bold text-center mb-6">Cadastre-se</h2>
+        <SignUpForm />
       </Card>
 
       <p className="mt-6 text-sm text-gray-600 text-center max-w-md">

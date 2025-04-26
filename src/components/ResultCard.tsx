@@ -1,17 +1,15 @@
 
 import React from "react";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Profile } from "@/types/quiz";
-import GradientButton from "@/components/GradientButton";
-import { RefreshCw } from "lucide-react";
 
 interface ResultCardProps {
   profile: Profile;
   isPrimary?: boolean;
-  onReset: () => void;
+  onReset?: () => void;
 }
 
-const ResultCard: React.FC<ResultCardProps> = ({ profile, isPrimary = false, onReset }) => {
+const ResultCard: React.FC<ResultCardProps> = ({ profile, isPrimary = false }) => {
   return (
     <Card className={`w-full max-w-lg shadow-lg border-0 ${isPrimary ? "bg-gradient-to-r from-persona-orange/10 to-persona-pink/10" : ""}`}>
       <CardHeader className="text-center">
@@ -49,15 +47,6 @@ const ResultCard: React.FC<ResultCardProps> = ({ profile, isPrimary = false, onR
           </div>
         </div>
       </CardContent>
-      
-      {isPrimary && (
-        <CardFooter className="flex justify-center pt-4">
-          <GradientButton onClick={onReset} className="flex items-center gap-2">
-            <RefreshCw className="h-4 w-4" />
-            Refazer Meu Diagnóstico
-          </GradientButton>
-        </CardFooter>
-      )}
     </Card>
   );
 };

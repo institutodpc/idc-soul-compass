@@ -41,7 +41,10 @@ export const QuizProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const answerQuestion = async (questionId: number, value: number) => {
-    if (!user) {
+    // Get current auth user from Supabase instead of relying on context state
+    const { data: { user: authUser } } = await supabase.auth.getUser();
+    
+    if (!authUser) {
       toast.error("Por favor, faça login antes de responder às perguntas.");
       return;
     }
@@ -161,7 +164,7 @@ export const QuizProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setAnswers(savedAnswers);
         setUser(savedUser);
         setHasLoadedProgress(true);
-        toast.info("Progresso anterior carregado!");
+        // Remove toast notification to prevent confusion
         return true;
       }
       return false;

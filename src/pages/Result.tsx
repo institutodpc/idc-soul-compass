@@ -109,8 +109,7 @@ const Result = () => {
         {primaryProfile ? (
           <ResultCard 
             profile={primaryProfile} 
-            isPrimary={true} 
-            onReset={() => navigate("/quiz")} 
+            isPrimary={true}
           />
         ) : (
           <div className="text-center p-6">
@@ -131,8 +130,7 @@ const Result = () => {
               {secondaryProfiles.map((profile) => (
                 <ResultCard 
                   key={profile.id} 
-                  profile={profile} 
-                  onReset={() => navigate("/quiz")} 
+                  profile={profile}
                 />
               ))}
             </div>

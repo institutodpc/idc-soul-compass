@@ -10,6 +10,7 @@ import QuizQuestion from "@/components/QuizQuestion";
 import QuizNavigation from "@/components/QuizNavigation";
 import { Question } from "@/types/quiz";
 import Logo from "@/components/Logo";
+import { supabase } from "@/integrations/supabase/client";
 
 const Quiz: React.FC = () => {
   const navigate = useNavigate();
@@ -35,23 +36,26 @@ const Quiz: React.FC = () => {
   const canGoNext = !!currentAnswer;
 
   useEffect(() => {
-    // If no user, redirect to auth page
-    if (!user) {
-      navigate("/auth");
-      return;
-    }
-
-    // Try to load saved progress only once
-    if (!hasAttemptedToLoadProgress) {
-      const hasSavedProgress = localStorage.getItem("quizProgress") !== null;
-      if (hasSavedProgress) {
-        loadQuizProgress();
+    const checkAuthAndLoadData = async () => {
+      // Check authentication status from Supabase directly
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      
+      // If no user, redirect to auth page
+      if (!authUser) {
+        navigate("/auth");
+        return;
       }
-      setHasAttemptedToLoadProgress(true);
-    }
 
-    // Load question data
-    const loadQuestionData = async () => {
+      // Try to load saved progress only once
+      if (!hasAttemptedToLoadProgress) {
+        const hasSavedProgress = localStorage.getItem("quizProgress") !== null;
+        if (hasSavedProgress) {
+          loadQuizProgress();
+        }
+        setHasAttemptedToLoadProgress(true);
+      }
+
+      // Load question data
       setIsLoading(true);
       try {
         const total = await getTotalQuestions();
@@ -66,7 +70,7 @@ const Quiz: React.FC = () => {
       }
     };
     
-    loadQuestionData();
+    checkAuthAndLoadData();
   }, [currentQuestionId, navigate, user, loadQuizProgress, hasAttemptedToLoadProgress]);
 
   const handleCompleteQuiz = async () => {
