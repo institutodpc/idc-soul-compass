@@ -91,7 +91,7 @@ const Result = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-white to-pink-50">
+      <div className="min-h-screen flex flex-col items-center justify-center p-4">
         <Logo className="mb-8" />
         <div className="text-center">
           <p className="text-lg">Calculando seus resultados...</p>
@@ -101,10 +101,10 @@ const Result = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-start p-4 bg-gradient-to-br from-white to-pink-50">
-      <Logo className="mb-12" />
+    <div className="min-h-screen flex flex-col items-center justify-center p-4">
+      <Logo className="mb-8" />
       
-      <div className="w-full max-w-5xl space-y-12 px-4">
+      <div className="w-full max-w-4xl space-y-8">
         {primaryProfile ? (
           <ResultCard 
             profile={primaryProfile} 
@@ -117,12 +117,12 @@ const Result = () => {
         )}
         
         {secondaryProfiles.length > 0 && (
-          <div className="space-y-8">
-            <h3 className="text-2xl font-semibold text-center mt-16 mb-8 text-transparent bg-clip-text bg-persona-gradient">
+          <>
+            <h3 className="text-xl font-semibold text-center mt-8 mb-4">
               Seus perfis secundários são:
             </h3>
             
-            <div className="grid gap-8 lg:grid-cols-2">
+            <div className="grid gap-6 md:grid-cols-2">
               {secondaryProfiles.map((profile) => (
                 <ResultCard 
                   key={profile.id} 
@@ -130,12 +130,10 @@ const Result = () => {
                 />
               ))}
             </div>
-          </div>
+          </>
         )}
         
-        <div className="mt-12">
-          <WhatsAppInvite />
-        </div>
+        <WhatsAppInvite />
       </div>
     </div>
   );
