@@ -3,6 +3,7 @@ import React from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Question, UserAnswer } from "@/types/quiz";
+import { motion } from "framer-motion";
 
 interface QuizQuestionProps {
   question: Question;
@@ -19,18 +20,34 @@ const QuizQuestion: React.FC<QuizQuestionProps> = ({ question, answer, onAnswer 
   ];
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="mb-6">
-        <h2 className="text-xl font-medium text-center">{question.text}</h2>
-      </div>
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="space-y-8"
+    >
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.1, duration: 0.3 }}
+        className="mb-8"
+      >
+        <h2 className="text-2xl font-medium text-center leading-relaxed text-gray-800">{question.text}</h2>
+      </motion.div>
       
       <RadioGroup
         value={answer ? String(answer.value) : undefined}
         onValueChange={(value) => onAnswer(question.id, parseInt(value))}
-        className="flex flex-col md:flex-row justify-between space-y-3 md:space-y-0 md:space-x-2"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
       >
-        {options.map((option) => (
-          <div key={option.value} className="flex items-center justify-center flex-1">
+        {options.map((option, index) => (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 + 0.2, duration: 0.3 }}
+            key={option.value}
+            className="flex items-center justify-center"
+          >
             <RadioGroupItem
               value={String(option.value)}
               id={`answer-${question.id}-${option.value}`}
@@ -38,18 +55,18 @@ const QuizQuestion: React.FC<QuizQuestionProps> = ({ question, answer, onAnswer 
             />
             <Label
               htmlFor={`answer-${question.id}-${option.value}`}
-              className={`flex flex-col items-center justify-center w-full p-4 border-2 rounded-lg cursor-pointer 
-                        transition-all duration-200
+              className={`flex flex-col items-center justify-center w-full p-6 border-2 rounded-xl cursor-pointer 
+                        transition-all duration-300 hover:shadow-md
                         ${answer !== undefined && Number(answer.value) === option.value 
-                          ? 'border-persona-pink bg-pink-50 font-bold' 
-                          : 'hover:bg-slate-50'}`}
+                          ? 'border-persona-pink bg-pink-50/80 font-bold shadow-md scale-105' 
+                          : 'hover:bg-slate-50 hover:border-gray-300'}`}
             >
-              <span className="font-medium">{option.label}</span>
+              <span className="font-medium text-lg">{option.label}</span>
             </Label>
-          </div>
+          </motion.div>
         ))}
       </RadioGroup>
-    </div>
+    </motion.div>
   );
 };
 
