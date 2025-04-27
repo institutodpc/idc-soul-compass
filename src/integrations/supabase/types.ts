@@ -13,21 +13,21 @@ export type Database = {
         Row: {
           created_at: string | null
           id: string
-          question_id: number | null
+          question_id: number
           user_id: string
           value: number | null
         }
         Insert: {
           created_at?: string | null
           id?: string
-          question_id?: number | null
+          question_id: number
           user_id: string
           value?: number | null
         }
         Update: {
           created_at?: string | null
           id?: string
-          question_id?: number | null
+          question_id?: number
           user_id?: string
           value?: number | null
         }
@@ -41,6 +41,20 @@ export type Database = {
           },
           {
             foreignKeyName: "answers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_answers_question"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_answers_user"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"

@@ -46,7 +46,7 @@ const Quiz: React.FC = () => {
         return;
       }
 
-      // Try to load saved progress only once
+      // Try to load saved progress only once and silently
       if (!hasAttemptedToLoadProgress) {
         const hasSavedProgress = localStorage.getItem("quizProgress") !== null;
         if (hasSavedProgress) {

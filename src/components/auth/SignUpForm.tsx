@@ -23,6 +23,7 @@ const SignUpForm = () => {
   const onSubmit = async (data: SignUpFormData) => {
     try {
       await signUp(data.email, data.password, data.name, data.whatsapp);
+      // After successful signup, immediately redirect to quiz page
       navigate('/quiz');
     } catch (error) {
       console.error('Signup error:', error);
@@ -77,7 +78,7 @@ const SignUpForm = () => {
       </div>
 
       <Button type="submit" className="w-full" disabled={isSubmitting}>
-        {isSubmitting ? 'Cadastrando...' : 'Criar Conta'}
+        {isSubmitting ? 'Cadastrando...' : 'Começar Quiz'}
       </Button>
     </form>
   );

@@ -8,7 +8,6 @@ import ResultCard from "@/components/ResultCard";
 import Logo from "@/components/Logo";
 import WhatsAppInvite from "@/components/WhatsAppInvite";
 import { useAuth } from "@/context/AuthContext";
-import GradientButton from "@/components/GradientButton";
 
 interface ProfileResult {
   profile_id: number;
@@ -114,9 +113,6 @@ const Result = () => {
         ) : (
           <div className="text-center p-6">
             <p className="text-lg text-red-500">Não foi possível encontrar seu perfil principal.</p>
-            <GradientButton onClick={() => navigate("/quiz")} className="mt-4">
-              Refazer Quiz
-            </GradientButton>
           </div>
         )}
         

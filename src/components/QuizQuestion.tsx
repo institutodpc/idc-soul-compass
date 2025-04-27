@@ -35,7 +35,7 @@ const QuizQuestion: React.FC<QuizQuestionProps> = ({ question, answer, onAnswer 
               value={String(option.value)}
               id={`answer-${question.id}-${option.value}`}
               className="peer sr-only"
-              disabled={answer !== undefined && Number(answer.value) !== option.value}
+              // No longer disabled based on previous selection
             />
             <Label
               htmlFor={`answer-${question.id}-${option.value}`}
@@ -43,9 +43,7 @@ const QuizQuestion: React.FC<QuizQuestionProps> = ({ question, answer, onAnswer 
                         transition-all duration-200
                         ${answer !== undefined && Number(answer.value) === option.value 
                           ? 'border-persona-pink bg-pink-50 font-bold' 
-                          : answer !== undefined 
-                            ? 'opacity-40 cursor-not-allowed' 
-                            : 'hover:bg-slate-50'}`}
+                          : 'hover:bg-slate-50'}`}
             >
               <span className="font-medium">{option.label}</span>
             </Label>
