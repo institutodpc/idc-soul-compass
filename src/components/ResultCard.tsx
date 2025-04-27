@@ -16,9 +16,13 @@ const ResultCard: React.FC<ResultCardProps> = ({ profile, isPrimary = false }) =
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
+      className="w-full max-w-3xl mx-auto"
     >
-      <Card className={`w-full max-w-lg shadow-lg border-0 transition-all duration-300 hover:shadow-xl
-        ${isPrimary ? "bg-gradient-to-r from-persona-orange/10 to-persona-pink/10" : ""}`}>
+      <Card className={`w-full shadow-xl border-0 backdrop-blur-md 
+        ${isPrimary 
+          ? "bg-gradient-to-r from-persona-orange/10 via-persona-pink/5 to-persona-pink/10 hover:shadow-persona-pink/20" 
+          : "bg-white/30 hover:shadow-lg"} 
+        transition-all duration-300`}>
         <CardHeader className="text-center p-8">
           <motion.h3 
             initial={{ opacity: 0 }}
@@ -46,7 +50,7 @@ const ResultCard: React.FC<ResultCardProps> = ({ profile, isPrimary = false }) =
             transition={{ delay: 0.4, duration: 0.5 }}
             className="space-y-6 pt-4"
           >
-            <div className="flex items-start space-x-4 p-4 rounded-lg hover:bg-gray-50 transition-colors">
+            <div className="flex items-start space-x-4 p-6 rounded-xl backdrop-blur-sm bg-white/20 hover:bg-white/30 transition-colors">
               <span className="text-2xl">📖</span>
               <div>
                 <p className="font-semibold text-lg mb-2">Versículo</p>
@@ -54,7 +58,7 @@ const ResultCard: React.FC<ResultCardProps> = ({ profile, isPrimary = false }) =
               </div>
             </div>
             
-            <div className="flex items-start space-x-4 p-4 rounded-lg hover:bg-gray-50 transition-colors">
+            <div className="flex items-start space-x-4 p-6 rounded-xl backdrop-blur-sm bg-white/20 hover:bg-white/30 transition-colors">
               <span className="text-2xl">✅</span>
               <div>
                 <p className="font-semibold text-lg mb-2">Dica Prática</p>
@@ -62,7 +66,7 @@ const ResultCard: React.FC<ResultCardProps> = ({ profile, isPrimary = false }) =
               </div>
             </div>
             
-            <div className="flex items-start space-x-4 p-4 rounded-lg hover:bg-gray-50 transition-colors">
+            <div className="flex items-start space-x-4 p-6 rounded-xl backdrop-blur-sm bg-white/20 hover:bg-white/30 transition-colors">
               <span className="text-2xl">🎯</span>
               <div>
                 <p className="font-semibold text-lg mb-2">Prática Espiritual</p>

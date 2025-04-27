@@ -32,13 +32,13 @@ const QuizQuestion: React.FC<QuizQuestionProps> = ({ question, answer, onAnswer 
         transition={{ delay: 0.1, duration: 0.3 }}
         className="mb-8"
       >
-        <h2 className="text-2xl font-medium text-center leading-relaxed text-gray-800">{question.text}</h2>
+        <h2 className="text-2xl sm:text-3xl font-medium text-center leading-relaxed text-gray-800 mb-12">{question.text}</h2>
       </motion.div>
       
       <RadioGroup
         value={answer ? String(answer.value) : undefined}
         onValueChange={(value) => onAnswer(question.id, parseInt(value))}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl mx-auto px-4"
       >
         {options.map((option, index) => (
           <motion.div
@@ -55,13 +55,14 @@ const QuizQuestion: React.FC<QuizQuestionProps> = ({ question, answer, onAnswer 
             />
             <Label
               htmlFor={`answer-${question.id}-${option.value}`}
-              className={`flex flex-col items-center justify-center w-full p-6 border-2 rounded-xl cursor-pointer 
-                        transition-all duration-300 hover:shadow-md
-                        ${answer !== undefined && Number(answer.value) === option.value 
-                          ? 'border-persona-pink bg-pink-50/80 font-bold shadow-md scale-105' 
-                          : 'hover:bg-slate-50 hover:border-gray-300'}`}
+              className="flex flex-col items-center justify-center w-full p-6 sm:p-8 border-2 rounded-xl cursor-pointer 
+                       backdrop-blur-md transition-all duration-300
+                       hover:shadow-lg hover:scale-102
+                       peer-checked:border-persona-pink peer-checked:bg-gradient-to-r 
+                       peer-checked:from-persona-orange/10 peer-checked:to-persona-pink/10 
+                       peer-checked:shadow-md peer-checked:scale-105"
             >
-              <span className="font-medium text-lg">{option.label}</span>
+              <span className="font-medium text-base sm:text-lg md:text-xl">{option.label}</span>
             </Label>
           </motion.div>
         ))}

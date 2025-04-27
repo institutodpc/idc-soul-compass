@@ -86,7 +86,7 @@ const Quiz: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-4">
+      <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-white to-pink-50">
         <Logo className="mb-8" />
         <div className="text-center">
           <p className="text-lg">Carregando questão...</p>
@@ -96,13 +96,14 @@ const Quiz: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-white to-pink-50">
       <Logo className="mb-8" />
       
       {currentQuestion && (
         <QuizCard
+          className="backdrop-blur-md bg-white/30 border-0 shadow-xl hover:shadow-2xl transition-all duration-300"
           headerContent={
-            <div className="space-y-2">
+            <div className="space-y-4">
               <ProgressBar currentStep={currentQuestionId} totalSteps={totalQuestions} />
               <div className="flex justify-between text-sm text-muted-foreground">
                 <span>Pergunta {currentQuestionId} de {totalQuestions}</span>
