@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { UserAnswer, QuizResult, User } from "@/types/quiz";
 import { calculateResults, getTotalQuestions } from "@/services/quizService";
@@ -91,15 +92,17 @@ export const QuizProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       if (!authUser) {
         console.error("User not authenticated");
-        return;
+        throw new Error("User not authenticated");
       }
       
       if (user) {
         await saveUserProfile(user);
       }
       
+      // Ensure we save all remaining answers
       await saveAnswers(answers);
       
+      // Call the RPC function to calculate profiles
       const { data: profileResults, error: rpcError } = await supabase
         .rpc('calcular_perfis', { user_uuid: authUser.id });
         

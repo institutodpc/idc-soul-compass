@@ -11,6 +11,7 @@ import QuizNavigation from "@/components/QuizNavigation";
 import { Question } from "@/types/quiz";
 import Logo from "@/components/Logo";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const Quiz: React.FC = () => {
   const navigate = useNavigate();
@@ -79,6 +80,7 @@ const Quiz: React.FC = () => {
       navigate("/result");
     } catch (error) {
       console.error("Error completing quiz:", error);
+      toast.error("Ocorreu um erro ao finalizar o quiz. Tente novamente.");
     }
   };
 

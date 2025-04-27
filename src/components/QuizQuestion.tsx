@@ -35,7 +35,6 @@ const QuizQuestion: React.FC<QuizQuestionProps> = ({ question, answer, onAnswer 
               value={String(option.value)}
               id={`answer-${question.id}-${option.value}`}
               className="peer sr-only"
-              // No longer disabled based on previous selection
             />
             <Label
               htmlFor={`answer-${question.id}-${option.value}`}
