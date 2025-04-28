@@ -40,11 +40,14 @@ const SignUpForm = () => {
       }
 
       // Check if email exists in auth system
-      const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers();
+      const { data: authData, error: authError } = await supabase.auth.admin.listUsers();
       
-      const existingAuthUser = authUsers?.users?.find(
-        user => user.email?.toLowerCase() === data.email.toLowerCase().trim()
-      );
+      let existingAuthUser = false;
+      if (authData && authData.users) {
+        existingAuthUser = authData.users.some(
+          user => user.email?.toLowerCase() === data.email.toLowerCase().trim()
+        );
+      }
       
       if (authError) {
         console.error('Error checking auth users:', authError);
