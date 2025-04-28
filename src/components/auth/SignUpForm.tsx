@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
@@ -27,7 +26,7 @@ const SignUpForm = () => {
     setIsSubmitting(true);
     
     try {
-      // First check if email is already registered
+      // First check if email is already registered in our users table
       const { data: existingUsers, error: queryError } = await supabase
         .from('users')
         .select('email')
@@ -39,10 +38,16 @@ const SignUpForm = () => {
         throw new Error('Erro ao verificar email existente');
       }
 
-      // Also check auth.users directly
-      const { data: { user: existingAuthUser }, error: authError } = await supabase.auth.admin.getUserByEmail(data.email);
-      
-      if (existingUsers || existingAuthUser) {
+      // Also check using auth directly without admin API
+      const { data: { users: existingAuthUsers }, error: authError } = await supabase.auth.admin
+        .listUsers({ filter: `email.eq.${data.email.toLowerCase().trim()}` });
+        
+      if (authError) {
+        console.error('Error checking auth users:', authError);
+      }
+
+      // If user exists in either table, show error
+      if (existingUsers || (existingAuthUsers && existingAuthUsers.length > 0)) {
         toast.error('🚫 Este e-mail já foi cadastrado. Utilize outro para prosseguir.');
         setIsSubmitting(false);
         return;
