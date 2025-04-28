@@ -25,6 +25,7 @@ const QuizNavigation: React.FC<QuizNavigationProps> = ({
       <Button 
         variant="outline" 
         onClick={onPrev}
+        className="border-gray-200 hover:bg-gray-50"
       >
         Anterior
       </Button>
@@ -33,6 +34,7 @@ const QuizNavigation: React.FC<QuizNavigationProps> = ({
         <GradientButton 
           onClick={onComplete} 
           disabled={!canGoNext}
+          className="px-6 py-2"
         >
           Finalizar
         </GradientButton>
@@ -40,6 +42,7 @@ const QuizNavigation: React.FC<QuizNavigationProps> = ({
         <GradientButton 
           onClick={onNext} 
           disabled={!canGoNext}
+          className="px-6 py-2"
         >
           Próxima
         </GradientButton>

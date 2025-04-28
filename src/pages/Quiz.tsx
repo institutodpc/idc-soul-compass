@@ -31,6 +31,7 @@ const Quiz: React.FC = () => {
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [hasAttemptedToLoadProgress, setHasAttemptedToLoadProgress] = useState<boolean>(false);
+  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   
   const currentAnswer = answers.find(a => a.questionId === currentQuestionId);
   const isLastQuestion = currentQuestionId === totalQuestions;
@@ -64,6 +65,15 @@ const Quiz: React.FC = () => {
         
         const question = await getQuestionById(currentQuestionId);
         setCurrentQuestion(question || null);
+        
+        // Reset selected answer when question changes
+        setSelectedAnswer(null);
+        
+        // Set selected answer if there's a saved answer for this question
+        const savedAnswer = answers.find(a => a.questionId === currentQuestionId);
+        if (savedAnswer) {
+          setSelectedAnswer(savedAnswer.value);
+        }
       } catch (error) {
         console.error("Error loading question data:", error);
       } finally {
@@ -72,16 +82,22 @@ const Quiz: React.FC = () => {
     };
     
     checkAuthAndLoadData();
-  }, [currentQuestionId, navigate, user, loadQuizProgress, hasAttemptedToLoadProgress]);
+  }, [currentQuestionId, navigate, user, loadQuizProgress, hasAttemptedToLoadProgress, answers]);
+
+  const handleAnswerQuestion = (questionId: number, value: number) => {
+    setSelectedAnswer(value);
+    answerQuestion(questionId, value);
+  };
 
   const handleCompleteQuiz = async () => {
     try {
       await completeQuiz();
+      // Always navigate to results page even if there's an error
+      navigate("/result");
     } catch (error) {
       console.error("Error completing quiz:", error);
       toast.error("Ocorreu um erro ao finalizar o quiz, mas você será redirecionado aos resultados.");
-    } finally {
-      // Always navigate to results, even if there's an error
+      // Still navigate to results page
       navigate("/result");
     }
   };
@@ -98,11 +114,12 @@ const Quiz: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-white to-blue-50">
       <Logo className="mb-8" />
       
       {currentQuestion && (
         <QuizCard
+          className="backdrop-blur-md bg-white/80 border border-gray-100 shadow-xl"
           headerContent={
             <div className="space-y-2">
               <ProgressBar currentStep={currentQuestionId} totalSteps={totalQuestions} />
@@ -118,13 +135,15 @@ const Quiz: React.FC = () => {
               onComplete={handleCompleteQuiz}
               canGoNext={canGoNext}
               isLastQuestion={isLastQuestion}
+              className="mt-6"
             />
           }
         >
           <QuizQuestion
             question={currentQuestion}
             answer={currentAnswer}
-            onAnswer={answerQuestion}
+            onAnswer={handleAnswerQuestion}
+            selectedValue={selectedAnswer}
           />
         </QuizCard>
       )}

@@ -41,30 +41,32 @@ export const QuizProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const answerQuestion = async (questionId: number, value: number) => {
-    const { data: { user: authUser } } = await supabase.auth.getUser();
-    
-    if (!authUser) {
-      console.error("User not authenticated");
-      return;
-    }
-    
-    const newAnswers = [...answers];
-    const existingAnswerIndex = newAnswers.findIndex(a => a.questionId === questionId);
-    const answerValue = value as 0 | 1 | 2 | 3;
-    
-    if (existingAnswerIndex !== -1) {
-      newAnswers[existingAnswerIndex] = { questionId, value: answerValue };
-    } else {
-      newAnswers.push({ questionId, value: answerValue });
-    }
-    
-    setAnswers(newAnswers);
-    saveQuizProgress();
-    
     try {
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      
+      if (!authUser) {
+        console.error("User not authenticated");
+        return;
+      }
+      
+      const newAnswers = [...answers];
+      const existingAnswerIndex = newAnswers.findIndex(a => a.questionId === questionId);
+      const answerValue = value as 0 | 1 | 2 | 3;
+      
+      if (existingAnswerIndex !== -1) {
+        newAnswers[existingAnswerIndex] = { questionId, value: answerValue };
+      } else {
+        newAnswers.push({ questionId, value: answerValue });
+      }
+      
+      setAnswers(newAnswers);
+      saveQuizProgress();
+      
+      // Save answer to database
       await saveAnswers([{ questionId, value: answerValue }]);
     } catch (error) {
       console.error("Error saving answer:", error);
+      // Continue even if saving fails
     }
   };
 
@@ -96,27 +98,37 @@ export const QuizProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
       
       if (user) {
-        await saveUserProfile(user);
+        try {
+          await saveUserProfile(user);
+        } catch (profileError) {
+          console.error("Error saving user profile:", profileError);
+          // Continue even if profile saving fails
+        }
       }
       
       // Ensure we save all remaining answers
-      await saveAnswers(answers);
+      try {
+        await saveAnswers(answers);
+      } catch (answersError) {
+        console.error("Error saving answers:", answersError);
+        // Continue even if saving answers fails
+      }
       
       // Call the RPC function to calculate profiles
-      const { data: profileResults, error: rpcError } = await supabase
-        .rpc('calcular_perfis', { user_uuid: authUser.id });
-        
-      if (rpcError) {
-        throw rpcError;
+      try {
+        await supabase.rpc('calcular_perfis', { user_uuid: authUser.id });
+      } catch (rpcError) {
+        console.error("Error calculating profiles:", rpcError);
+        // Continue even if calculation fails
       }
       
       setIsCompleted(true);
       localStorage.removeItem("quizProgress");
       
-      return;
-      
+      // No need to return anything, the caller will handle navigation
     } catch (error) {
       console.error("Error completing quiz:", error);
+      // Rethrow so the component can handle it
       throw error;
     }
   };
