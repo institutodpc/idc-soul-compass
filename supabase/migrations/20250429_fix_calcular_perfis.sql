@@ -1,7 +1,5 @@
 
--- Ensure we have the calcular_perfis function properly defined
--- This won't be executed automatically, but it provides the SQL for the user to run if needed
-/*
+-- Remove comment markers and ensure the calcular_perfis function is correctly defined
 CREATE OR REPLACE FUNCTION public.calcular_perfis(user_uuid uuid)
 RETURNS TABLE(profile_id integer, score_normalizado numeric)
 LANGUAGE plpgsql
@@ -22,5 +20,4 @@ BEGIN
     ORDER BY score_normalizado DESC
     LIMIT 3;
 END;
-$function$
-*/
+$function$;

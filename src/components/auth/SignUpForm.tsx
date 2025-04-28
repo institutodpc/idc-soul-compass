@@ -39,10 +39,10 @@ const SignUpForm = () => {
         throw new Error('Erro ao verificar email existente');
       }
 
-      // Check if email exists in auth system (without using filter parameter)
-      const { data: { users }, error: authError } = await supabase.auth.admin.listUsers();
+      // Check if email exists in auth system
+      const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers();
       
-      const existingAuthUser = users?.find(
+      const existingAuthUser = authUsers?.users?.find(
         user => user.email?.toLowerCase() === data.email.toLowerCase().trim()
       );
       

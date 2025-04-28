@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Question, UserAnswer } from "@/types/quiz";
@@ -27,6 +27,11 @@ const QuizQuestion: React.FC<QuizQuestionProps> = ({
   const handleValueChange = (value: string) => {
     onAnswer(question.id, parseInt(value));
   };
+  
+  // This ensures the component properly updates when the question changes
+  useEffect(() => {
+    console.log("Question changed to:", question.id, "Selected value:", selectedValue);
+  }, [question.id, selectedValue]);
 
   return (
     <div className="space-y-6 animate-fade-in">

@@ -31,13 +31,16 @@ const Result = () => {
         }
 
         // Call the calcular_perfis RPC function
+        console.log("Calling calcular_perfis for user:", user.id);
         const { data: profileResults, error: rpcError } = await supabase
           .rpc('calcular_perfis', { user_uuid: user.id });
 
         if (rpcError) {
+          console.error("RPC Error:", rpcError);
           throw rpcError;
         }
 
+        console.log("Profile results:", profileResults);
         if (!profileResults || profileResults.length === 0) {
           toast.error("Não foi possível calcular seus perfis. Tente novamente.");
           navigate("/quiz");
@@ -46,6 +49,7 @@ const Result = () => {
 
         // Get profile details for the calculated profile IDs
         const profileIds = profileResults.map((result: ProfileResult) => result.profile_id);
+        console.log("Profile IDs:", profileIds);
         
         const { data: profiles, error: profilesError } = await supabase
           .from('profiles')
@@ -53,9 +57,11 @@ const Result = () => {
           .in('id', profileIds);
 
         if (profilesError) {
+          console.error("Profiles Error:", profilesError);
           throw profilesError;
         }
 
+        console.log("Fetched profiles:", profiles);
         // Map the profile data to our Profile type
         const typedProfiles: Profile[] = profiles.map(p => ({
           id: p.id,

@@ -32,6 +32,7 @@ const Quiz: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [hasAttemptedToLoadProgress, setHasAttemptedToLoadProgress] = useState<boolean>(false);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  const [isCompletingQuiz, setIsCompletingQuiz] = useState<boolean>(false);
   
   const currentAnswer = answers.find(a => a.questionId === currentQuestionId);
   const isLastQuestion = currentQuestionId === totalQuestions;
@@ -67,12 +68,11 @@ const Quiz: React.FC = () => {
         setCurrentQuestion(question || null);
         
         // Reset selected answer when question changes
-        setSelectedAnswer(null);
-        
-        // Set selected answer if there's a saved answer for this question
         const savedAnswer = answers.find(a => a.questionId === currentQuestionId);
         if (savedAnswer) {
           setSelectedAnswer(savedAnswer.value);
+        } else {
+          setSelectedAnswer(null);
         }
       } catch (error) {
         console.error("Error loading question data:", error);
@@ -91,14 +91,16 @@ const Quiz: React.FC = () => {
 
   const handleCompleteQuiz = async () => {
     try {
+      setIsCompletingQuiz(true);
       await completeQuiz();
-      // Always navigate to results page even if there's an error
       navigate("/result");
     } catch (error) {
       console.error("Error completing quiz:", error);
       toast.error("Ocorreu um erro ao finalizar o quiz, mas você será redirecionado aos resultados.");
-      // Still navigate to results page
+      // Still navigate to results page even if there's an error
       navigate("/result");
+    } finally {
+      setIsCompletingQuiz(false);
     }
   };
 
