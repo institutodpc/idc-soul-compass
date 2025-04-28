@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Question, UserAnswer } from "@/types/quiz";
@@ -18,6 +18,21 @@ const QuizQuestion: React.FC<QuizQuestionProps> = ({ question, answer, onAnswer 
     { value: 3, label: "Sempre" }
   ];
 
+  // Reset selected state when question changes
+  const [selectedValue, setSelectedValue] = useState<string | undefined>(
+    answer ? String(answer.value) : undefined
+  );
+
+  // Update selected state when question or answer changes
+  useEffect(() => {
+    setSelectedValue(answer ? String(answer.value) : undefined);
+  }, [question.id, answer]);
+
+  const handleValueChange = (value: string) => {
+    setSelectedValue(value);
+    onAnswer(question.id, parseInt(value));
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="mb-6">
@@ -25,8 +40,8 @@ const QuizQuestion: React.FC<QuizQuestionProps> = ({ question, answer, onAnswer 
       </div>
       
       <RadioGroup
-        value={answer ? String(answer.value) : undefined}
-        onValueChange={(value) => onAnswer(question.id, parseInt(value))}
+        value={selectedValue}
+        onValueChange={handleValueChange}
         className="flex flex-col md:flex-row justify-between space-y-3 md:space-y-0 md:space-x-2"
       >
         {options.map((option) => (
@@ -40,7 +55,7 @@ const QuizQuestion: React.FC<QuizQuestionProps> = ({ question, answer, onAnswer 
               htmlFor={`answer-${question.id}-${option.value}`}
               className={`flex flex-col items-center justify-center w-full p-4 border-2 rounded-lg cursor-pointer 
                         transition-all duration-200
-                        ${answer !== undefined && Number(answer.value) === option.value 
+                        ${selectedValue === String(option.value) 
                           ? 'border-persona-pink bg-pink-50 font-bold' 
                           : 'hover:bg-slate-50'}`}
             >

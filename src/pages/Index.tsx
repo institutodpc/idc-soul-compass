@@ -1,15 +1,17 @@
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import GradientButton from "@/components/GradientButton";
 import Logo from "@/components/Logo";
 import { useQuizContext } from "@/context/QuizContext";
 import { useAuth } from "@/context/AuthContext";
+import AlertModal from "@/components/AlertModal";
 
 const Index = () => {
   const navigate = useNavigate();
   const { startQuiz, loadQuizProgress } = useQuizContext();
   const { user } = useAuth();
+  const [showWarningModal, setShowWarningModal] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -23,12 +25,17 @@ const Index = () => {
   }, [loadQuizProgress, navigate, user]);
 
   const handleStartQuiz = () => {
-    if (!user) {
-      navigate("/auth");
-      return;
+    if (user) {
+      startQuiz();
+      navigate("/quiz");
+    } else {
+      setShowWarningModal(true);
     }
-    startQuiz();
-    navigate("/quiz");
+  };
+
+  const handleCloseWarningModal = () => {
+    setShowWarningModal(false);
+    navigate("/auth");
   };
 
   return (
@@ -68,6 +75,18 @@ const Index = () => {
           Quiz com 33 perguntas para identificar seu perfil espiritual dominante e seus comportamentos limitantes.
         </p>
       </div>
+
+      <AlertModal 
+        isOpen={showWarningModal}
+        onClose={handleCloseWarningModal}
+        title="Aviso Importante"
+        description={
+          <p>
+            📢 Você tem direito a realizar apenas <strong>uma análise gratuita</strong>. Responda com atenção!
+          </p>
+        }
+        actionLabel="Ok, Entendi"
+      />
     </div>
   );
 };

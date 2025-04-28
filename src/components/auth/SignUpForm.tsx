@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,6 +7,8 @@ import { useAuth } from '@/context/AuthContext';
 import { Label } from '@/components/ui/label';
 import { formatPhoneNumber } from '@/lib/phoneFormatter';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface SignUpFormData {
   name: string;
@@ -18,15 +20,46 @@ interface SignUpFormData {
 const SignUpForm = () => {
   const { signUp } = useAuth();
   const navigate = useNavigate();
-  const { register, handleSubmit, formState: { isSubmitting }, setValue, watch } = useForm<SignUpFormData>();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<SignUpFormData>();
 
   const onSubmit = async (data: SignUpFormData) => {
+    setIsSubmitting(true);
+    
     try {
+      // First check if email is already registered
+      const { data: existingUsers, error: queryError } = await supabase
+        .from('users')
+        .select('email')
+        .eq('email', data.email.toLowerCase().trim())
+        .maybeSingle();
+
+      if (queryError) {
+        console.error('Error checking existing email:', queryError);
+        throw new Error('Erro ao verificar email existente');
+      }
+
+      // Also check auth.users directly
+      const { data: { user: existingAuthUser }, error: authError } = await supabase.auth.admin.getUserByEmail(data.email);
+      
+      if (existingUsers || existingAuthUser) {
+        toast.error('🚫 Este e-mail já foi cadastrado. Utilize outro para prosseguir.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Proceed with signup
       await signUp(data.email, data.password, data.name, data.whatsapp);
-      // After successful signup, immediately redirect to quiz page
       navigate('/quiz');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Signup error:', error);
+      if (error.message?.includes('already registered')) {
+        toast.error('🚫 Este e-mail já foi cadastrado. Utilize outro para prosseguir.');
+      } else {
+        toast.error(error.message || 'Erro ao realizar cadastro');
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -41,9 +74,11 @@ const SignUpForm = () => {
         <Label htmlFor="name">Nome completo*</Label>
         <Input
           id="name"
-          {...register('name', { required: true })}
+          {...register('name', { required: 'Nome é obrigatório' })}
           placeholder="Seu nome"
+          className="bg-white/70 backdrop-blur-sm"
         />
+        {errors.name && <p className="text-xs text-red-500">{errors.name.message}</p>}
       </div>
 
       <div className="space-y-2">
@@ -51,9 +86,17 @@ const SignUpForm = () => {
         <Input
           id="email"
           type="email"
-          {...register('email', { required: true })}
+          {...register('email', { 
+            required: 'Email é obrigatório',
+            pattern: {
+              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+              message: 'Email inválido'
+            }
+          })}
           placeholder="seu@email.com"
+          className="bg-white/70 backdrop-blur-sm"
         />
+        {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
       </div>
 
       <div className="space-y-2">
@@ -61,23 +104,37 @@ const SignUpForm = () => {
         <Input
           id="password"
           type="password"
-          {...register('password', { required: true, minLength: 6 })}
+          {...register('password', { 
+            required: 'Senha é obrigatória',
+            minLength: {
+              value: 6,
+              message: 'Senha deve ter no mínimo 6 caracteres'
+            }
+          })}
           placeholder="••••••••"
+          className="bg-white/70 backdrop-blur-sm"
         />
+        {errors.password && <p className="text-xs text-red-500">{errors.password.message}</p>}
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="whatsapp">WhatsApp*</Label>
         <Input
           id="whatsapp"
-          {...register('whatsapp', { required: true })}
+          {...register('whatsapp', { required: 'WhatsApp é obrigatório' })}
           placeholder="(00) 00000-0000"
           onChange={handleWhatsAppChange}
           value={watch('whatsapp')}
+          className="bg-white/70 backdrop-blur-sm"
         />
+        {errors.whatsapp && <p className="text-xs text-red-500">{errors.whatsapp.message}</p>}
       </div>
 
-      <Button type="submit" className="w-full" disabled={isSubmitting}>
+      <Button 
+        type="submit" 
+        className="w-full bg-gradient-to-r from-persona-orange to-persona-pink hover:opacity-90 transition-opacity" 
+        disabled={isSubmitting}
+      >
         {isSubmitting ? 'Cadastrando...' : 'Começar Quiz'}
       </Button>
     </form>

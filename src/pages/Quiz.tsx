@@ -77,10 +77,12 @@ const Quiz: React.FC = () => {
   const handleCompleteQuiz = async () => {
     try {
       await completeQuiz();
-      navigate("/result");
     } catch (error) {
       console.error("Error completing quiz:", error);
-      toast.error("Ocorreu um erro ao finalizar o quiz. Tente novamente.");
+      toast.error("Ocorreu um erro ao finalizar o quiz, mas você será redirecionado aos resultados.");
+    } finally {
+      // Always navigate to results, even if there's an error
+      navigate("/result");
     }
   };
 
