@@ -95,12 +95,15 @@ const Quiz: React.FC = () => {
     try {
       setIsCompletingQuiz(true);
       await completeQuiz();
+      // Always navigate to results page after completion attempt
+      navigate("/result");
     } catch (error) {
       console.error("Error completing quiz:", error);
+      toast.error("Ocorreu um erro ao finalizar o quiz, mas redirecionando para resultados...");
+      // Still navigate to results page even on error
+      navigate("/result");
     } finally {
       setIsCompletingQuiz(false);
-      // Always navigate to results page regardless of errors
-      navigate("/result");
     }
   };
 
