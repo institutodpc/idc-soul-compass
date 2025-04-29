@@ -28,11 +28,6 @@ const QuizQuestion: React.FC<QuizQuestionProps> = ({
     onAnswer(question.id, parseInt(value));
   };
   
-  // This ensures the component properly resets when the question changes
-  useEffect(() => {
-    console.log("Question changed to:", question.id, "Selected value:", selectedValue);
-  }, [question.id, selectedValue]);
-
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="mb-6">

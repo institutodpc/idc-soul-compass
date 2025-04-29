@@ -38,6 +38,12 @@ const Quiz: React.FC = () => {
   const isLastQuestion = currentQuestionId === totalQuestions;
   const canGoNext = !!currentAnswer;
 
+  // Reset selectedAnswer when the question changes
+  useEffect(() => {
+    const savedAnswer = answers.find(a => a.questionId === currentQuestionId);
+    setSelectedAnswer(savedAnswer ? savedAnswer.value : null);
+  }, [currentQuestionId, answers]);
+
   useEffect(() => {
     const checkAuthAndLoadData = async () => {
       // Check authentication status from Supabase directly
@@ -66,14 +72,6 @@ const Quiz: React.FC = () => {
         
         const question = await getQuestionById(currentQuestionId);
         setCurrentQuestion(question || null);
-        
-        // Reset selected answer when question changes
-        const savedAnswer = answers.find(a => a.questionId === currentQuestionId);
-        if (savedAnswer) {
-          setSelectedAnswer(savedAnswer.value);
-        } else {
-          setSelectedAnswer(null);
-        }
       } catch (error) {
         console.error("Error loading question data:", error);
       } finally {
@@ -82,26 +80,27 @@ const Quiz: React.FC = () => {
     };
     
     checkAuthAndLoadData();
-  }, [currentQuestionId, navigate, user, loadQuizProgress, hasAttemptedToLoadProgress, answers]);
+  }, [currentQuestionId, navigate, user, loadQuizProgress, hasAttemptedToLoadProgress]);
 
   const handleAnswerQuestion = (questionId: number, value: number) => {
     setSelectedAnswer(value);
     answerQuestion(questionId, value);
   };
 
+  const handleNextQuestion = () => {
+    nextQuestion();
+  };
+
   const handleCompleteQuiz = async () => {
     try {
       setIsCompletingQuiz(true);
       await completeQuiz();
-      // Always navigate to result page, even if there are errors with saving data
-      navigate("/result");
     } catch (error) {
       console.error("Error completing quiz:", error);
-      toast.error("Ocorreu um erro ao finalizar o quiz, mas você será redirecionado aos resultados.");
-      // Still navigate to results page even if there's an error
-      navigate("/result");
     } finally {
       setIsCompletingQuiz(false);
+      // Always navigate to results page regardless of errors
+      navigate("/result");
     }
   };
 
@@ -133,7 +132,7 @@ const Quiz: React.FC = () => {
           }
           footerContent={
             <QuizNavigation
-              onNext={nextQuestion}
+              onNext={handleNextQuestion}
               onPrev={prevQuestion}
               onComplete={handleCompleteQuiz}
               canGoNext={canGoNext}

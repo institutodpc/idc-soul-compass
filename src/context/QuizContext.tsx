@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { UserAnswer, QuizResult, User } from "@/types/quiz";
 import { calculateResults, getTotalQuestions } from "@/services/quizService";
@@ -118,8 +117,7 @@ export const QuizProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setIsCompleted(true);
       localStorage.removeItem("quizProgress");
       
-      // Return successfully, the component will handle navigation
-      return;
+      // No navigation here - the component will handle that
       
     } catch (error) {
       console.error("Error completing quiz:", error);
