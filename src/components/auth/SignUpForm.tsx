@@ -45,7 +45,12 @@ const SignUpForm = () => {
       let existingAuthUser = false;
       if (authData && authData.users) {
         existingAuthUser = authData.users.some(
-          user => user.email?.toLowerCase() === data.email.toLowerCase().trim()
+          user => {
+            if (user.email) {
+              return user.email.toLowerCase() === data.email.toLowerCase().trim();
+            }
+            return false;
+          }
         );
       }
       

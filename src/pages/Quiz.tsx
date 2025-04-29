@@ -93,6 +93,7 @@ const Quiz: React.FC = () => {
     try {
       setIsCompletingQuiz(true);
       await completeQuiz();
+      // Always navigate to result page, even if there are errors with saving data
       navigate("/result");
     } catch (error) {
       console.error("Error completing quiz:", error);
