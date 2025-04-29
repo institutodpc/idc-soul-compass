@@ -9,6 +9,7 @@ import { formatPhoneNumber } from '@/lib/phoneFormatter';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { User } from '@supabase/supabase-js';
 
 interface SignUpFormData {
   name: string;
@@ -45,8 +46,8 @@ const SignUpForm = () => {
       let existingAuthUser = false;
       if (authData && authData.users) {
         existingAuthUser = authData.users.some(
-          user => {
-            if (user.email) {
+          (user: any) => {
+            if (user && user.email) {
               return user.email.toLowerCase() === data.email.toLowerCase().trim();
             }
             return false;
