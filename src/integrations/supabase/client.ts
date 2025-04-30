@@ -5,7 +5,9 @@ import type { Database } from './types';
 const SUPABASE_URL = "https://jkmnuyqgllnaiqiotsoz.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImprbW51eXFnbGxuYWlxaW90c296Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU0OTEyMDksImV4cCI6MjA2MTA2NzIwOX0.-cU_cLNIX5Ld8Tjvw7SeFPtyNFArn8qu45Nppl5Ibj4";
 
-// Import the supabase client like this:
-// import { supabase } from "@/integrations/supabase/client";
-
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  }
+});

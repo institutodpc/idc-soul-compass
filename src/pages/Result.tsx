@@ -30,6 +30,17 @@ const Result = () => {
           return;
         }
 
+        // Verificar respostas existentes
+        const { data: answers, error: answersError } = await supabase
+          .from('answers')
+          .select('*')
+          .eq('user_id', user.id);
+
+        console.log("Respostas encontradas:", answers);
+        if (answersError) {
+          console.error("Erro ao buscar respostas:", answersError);
+        }
+
         // Call the calcular_perfis RPC function
         console.log("Calling calcular_perfis for user:", user.id);
         const { data: profileResults, error: rpcError } = await supabase

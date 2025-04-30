@@ -22,8 +22,8 @@ const QuizNavigation: React.FC<QuizNavigationProps> = ({
 }) => {
   return (
     <div className={`flex justify-between w-full ${className}`}>
-      <Button 
-        variant="outline" 
+      <Button
+        variant="outline"
         onClick={onPrev}
         className="border-gray-200 hover:bg-gray-50"
       >
@@ -31,18 +31,20 @@ const QuizNavigation: React.FC<QuizNavigationProps> = ({
       </Button>
       
       {isLastQuestion ? (
-        <GradientButton 
-          onClick={onComplete} 
+        <GradientButton
+          onClick={onComplete}
           disabled={!canGoNext}
           className="px-6 py-2"
+          type="button"
         >
           Finalizar
         </GradientButton>
       ) : (
-        <GradientButton 
-          onClick={onNext} 
+        <GradientButton
+          onClick={onNext}
           disabled={!canGoNext}
           className="px-6 py-2"
+          type="button"
         >
           Próxima
         </GradientButton>

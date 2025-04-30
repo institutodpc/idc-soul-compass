@@ -44,6 +44,12 @@ const Quiz: React.FC = () => {
     setSelectedAnswer(savedAnswer ? savedAnswer.value : null);
   }, [currentQuestionId, answers]);
 
+  const handleNextQuestion = () => {
+    // Reseta o selectedAnswer antes de ir para a próxima questão
+    setSelectedAnswer(null);
+    nextQuestion();
+  };
+
   useEffect(() => {
     const checkAuthAndLoadData = async () => {
       // Check authentication status from Supabase directly
@@ -82,26 +88,70 @@ const Quiz: React.FC = () => {
     checkAuthAndLoadData();
   }, [currentQuestionId, navigate, user, loadQuizProgress, hasAttemptedToLoadProgress]);
 
-  const handleAnswerQuestion = (questionId: number, value: number) => {
-    setSelectedAnswer(value);
-    answerQuestion(questionId, value);
-  };
-
-  const handleNextQuestion = () => {
-    nextQuestion();
+  const handleAnswerQuestion = async (questionId: number, value: number) => {
+    try {
+      setSelectedAnswer(value);
+      
+      // Use upsert instead of separate insert/update
+      const { data, error } = await supabase
+        .from('answers')
+        .upsert({
+          question_id: questionId,
+          value: value,
+          user_id: user?.id
+        }, {
+          onConflict: 'user_id,question_id'
+        });
+  
+      if (error) {
+        console.error('Error saving answer:', error);
+        toast.error('Erro ao salvar resposta. Por favor, tente novamente.');
+        return;
+      }
+      
+      answerQuestion(questionId, value);
+    } catch (error) {
+      console.error('Error saving answer:', error);
+      toast.error('Erro ao salvar resposta. Por favor, tente novamente.');
+    }
   };
 
   const handleCompleteQuiz = async () => {
     try {
       setIsCompletingQuiz(true);
-      await completeQuiz();
-      // Always navigate to results page after completion attempt
+      
+      // Verifica se todas as questões foram respondidas
+      if (answers.length < totalQuestions) {
+        const missingQuestions = totalQuestions - answers.length;
+        toast.error(`Faltam ${missingQuestions} questões para completar o quiz.`);
+        return;
+      }
+  
+      // Verifica se há respostas inválidas - ajustando para o range correto (0-3)
+      const invalidAnswers = answers.filter(a => a.value < 0 || a.value > 3);
+      if (invalidAnswers.length > 0) {
+        toast.error("Algumas respostas são inválidas. Por favor, revise suas respostas.");
+        return;
+      }
+  
+      // Adiciona log para debug
+      console.log('Enviando respostas:', answers);
+  
+      const result = await completeQuiz();
+      
+      // Adiciona log para debug do resultado
+      console.log('Resultado do cálculo:', result);
+      
+      if (!result) {
+        toast.error("Erro ao calcular perfis. Por favor, verifique se todas as respostas foram salvas corretamente.");
+        return;
+      }
+      
+      // Se chegou aqui, significa que deu tudo certo
       navigate("/result");
     } catch (error) {
-      console.error("Error completing quiz:", error);
-      toast.error("Ocorreu um erro ao finalizar o quiz, mas redirecionando para resultados...");
-      // Still navigate to results page even on error
-      navigate("/result");
+      console.error("Erro detalhado ao completar quiz:", error);
+      toast.error("Erro ao processar respostas. Detalhes no console para debug.");
     } finally {
       setIsCompletingQuiz(false);
     }

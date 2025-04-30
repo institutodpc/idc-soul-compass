@@ -25,8 +25,14 @@ const QuizQuestion: React.FC<QuizQuestionProps> = ({
   ];
 
   const handleValueChange = (value: string) => {
-    onAnswer(question.id, parseInt(value));
+    const numValue = parseInt(value);
+    if (!isNaN(numValue)) {
+      onAnswer(question.id, numValue);
+    }
   };
+  
+  // Força o reset do RadioGroup quando a questão muda
+  const radioGroupKey = `question-${question.id}`;
   
   return (
     <div className="space-y-6 animate-fade-in">
@@ -35,14 +41,16 @@ const QuizQuestion: React.FC<QuizQuestionProps> = ({
       </div>
       
       <RadioGroup
-        value={selectedValue !== null ? String(selectedValue) : undefined}
+        key={radioGroupKey}
+        defaultValue={undefined}
+        value={selectedValue?.toString()}
         onValueChange={handleValueChange}
         className="flex flex-col md:flex-row justify-between space-y-3 md:space-y-0 md:space-x-2"
       >
         {options.map((option) => (
           <div key={option.value} className="flex items-center justify-center flex-1">
             <RadioGroupItem
-              value={String(option.value)}
+              value={option.value.toString()}
               id={`answer-${question.id}-${option.value}`}
               className="peer sr-only"
             />
@@ -52,7 +60,7 @@ const QuizQuestion: React.FC<QuizQuestionProps> = ({
                         transition-all duration-200
                         ${selectedValue === option.value 
                           ? 'border-persona-pink bg-pink-50 font-bold' 
-                          : 'hover:bg-slate-50'}`}
+                          : 'border-transparent hover:bg-slate-50'}`}
             >
               <span className="font-medium">{option.label}</span>
             </Label>
