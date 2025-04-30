@@ -35,16 +35,9 @@ export interface UserAnswer {
   value: AnswerValue;
 }
 
-export interface ProfileScore {
-  profileId: number;
-  score: number;
-  questionCount: number;
-}
-
 export interface QuizResult {
   primaryProfile: Profile;
   secondaryProfiles: Profile[];
-  scores?: ProfileScore[];
 }
 
 export interface User {
