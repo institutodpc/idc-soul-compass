@@ -7,15 +7,21 @@ interface ResultCardProps {
   profile: Profile;
   isPrimary?: boolean;
   onReset?: () => void;
+  score?: number;
 }
 
-const ResultCard: React.FC<ResultCardProps> = ({ profile, isPrimary = false }) => {
+const ResultCard: React.FC<ResultCardProps> = ({ profile, isPrimary = false, score }) => {
   return (
     <Card className={`w-full max-w-lg shadow-lg border-0 ${isPrimary ? "bg-gradient-to-r from-persona-orange/10 to-persona-pink/10" : ""}`}>
       <CardHeader className="text-center">
         <h3 className={`text-2xl font-bold ${isPrimary ? "text-transparent bg-clip-text bg-persona-gradient" : ""}`}>
           {isPrimary ? `Seu perfil principal é: ${profile.name}` : profile.name}
         </h3>
+        {score !== undefined && (
+          <p className="text-sm text-muted-foreground mt-1">
+            Compatibilidade: {score.toFixed(1)}%
+          </p>
+        )}
       </CardHeader>
       
       <CardContent className="space-y-6">

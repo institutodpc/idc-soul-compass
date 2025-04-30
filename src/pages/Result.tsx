@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,6 +11,8 @@ import { useAuth } from "@/context/AuthContext";
 interface ProfileResult {
   profile_id: number;
   score_normalizado: number;
+  perfil_nome: string;
+  peso_total: number;
 }
 
 const Result = () => {
@@ -20,6 +21,7 @@ const Result = () => {
   const [primaryProfile, setPrimaryProfile] = useState<Profile | null>(null);
   const [secondaryProfiles, setSecondaryProfiles] = useState<Profile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [debugInfo, setDebugInfo] = useState<ProfileResult[]>([]);
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -36,12 +38,12 @@ const Result = () => {
           .select('*')
           .eq('user_id', user.id);
 
-        console.log("Respostas encontradas:", answers);
+        console.log("Respostas encontradas:", answers?.length || 0);
         if (answersError) {
           console.error("Erro ao buscar respostas:", answersError);
         }
 
-        // Call the calcular_perfis RPC function
+        // Call the enhanced calcular_perfis RPC function
         console.log("Calling calcular_perfis for user:", user.id);
         const { data: profileResults, error: rpcError } = await supabase
           .rpc('calcular_perfis', { user_uuid: user.id });
@@ -57,6 +59,9 @@ const Result = () => {
           navigate("/quiz");
           return;
         }
+
+        // Keep debug info
+        setDebugInfo(profileResults);
 
         // Get profile details for the calculated profile IDs
         const profileIds = profileResults.map((result: ProfileResult) => result.profile_id);
@@ -126,6 +131,7 @@ const Result = () => {
           <ResultCard 
             profile={primaryProfile} 
             isPrimary={true}
+            score={debugInfo.find(p => p.profile_id === primaryProfile.id)?.score_normalizado}
           />
         ) : (
           <div className="text-center p-6">
@@ -144,6 +150,7 @@ const Result = () => {
                 <ResultCard 
                   key={profile.id} 
                   profile={profile}
+                  score={debugInfo.find(p => p.profile_id === profile.id)?.score_normalizado}
                 />
               ))}
             </div>

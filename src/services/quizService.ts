@@ -17,31 +17,55 @@ export const calculateResults = async (answers: UserAnswer[]): Promise<QuizResul
   }
 
   // Initialize scores for each profile
-  const profileScores = cachedProfiles.map(profile => ({
-    profile,
-    score: 0,
-    maxPossibleScore: getMaxPossibleScore(profile.id, cachedWeights),
-    normalizedScore: 0
-  }));
+  const profileScores = cachedProfiles.map(profile => {
+    // Calculate max possible score for this profile
+    const maxPossibleScore = getMaxPossibleScore(profile.id, cachedWeights);
+    
+    return {
+      profile,
+      score: 0,
+      maxPossibleScore,
+      normalizedScore: 0,
+      questionCount: 0
+    };
+  });
+
+  // Track questions answered per profile
+  const profileQuestions: Record<number, Set<number>> = {};
+  cachedProfiles?.forEach(profile => {
+    profileQuestions[profile.id] = new Set();
+  });
 
   // Calculate raw scores
   answers.forEach(answer => {
-    const relevantWeights = cachedWeights.filter(w => w.questionId === answer.questionId);
+    const relevantWeights = cachedWeights?.filter(w => w.questionId === answer.questionId) || [];
     
     relevantWeights.forEach(weight => {
       const profileScore = profileScores.find(p => p.profile.id === weight.profileId);
       if (profileScore) {
         profileScore.score += weight.weight * answer.value;
+        profileQuestions[weight.profileId]?.add(answer.questionId);
       }
     });
   });
 
-  // Calculate normalized scores
+  // Update question counts and calculate normalized scores
   profileScores.forEach(profileScore => {
+    profileScore.questionCount = profileQuestions[profileScore.profile.id]?.size || 0;
+    
     if (profileScore.maxPossibleScore > 0) {
       profileScore.normalizedScore = (profileScore.score / profileScore.maxPossibleScore) * 100;
     }
   });
+
+  console.log("Profile scores calculated:", profileScores.map(p => ({
+    id: p.profile.id,
+    name: p.profile.name,
+    score: p.score,
+    maxScore: p.maxPossibleScore,
+    normalized: p.normalizedScore,
+    questions: p.questionCount
+  })));
 
   // Sort by normalized score
   const sortedProfiles = [...profileScores]
@@ -58,7 +82,12 @@ export const calculateResults = async (answers: UserAnswer[]): Promise<QuizResul
 
   return {
     primaryProfile,
-    secondaryProfiles
+    secondaryProfiles,
+    scores: sortedProfiles.map(p => ({
+      profileId: p.profile.id,
+      score: p.normalizedScore,
+      questionCount: p.questionCount
+    }))
   };
 };
 
