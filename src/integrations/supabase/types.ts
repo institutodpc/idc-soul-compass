@@ -40,13 +40,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "answers_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "fk_answers_question"
             columns: ["question_id"]
             isOneToOne: false

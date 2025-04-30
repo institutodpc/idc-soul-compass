@@ -92,13 +92,35 @@ const Quiz: React.FC = () => {
     try {
       setSelectedAnswer(value);
       
-      // Use upsert instead of separate insert/update
-      const { data, error } = await supabase
+      if (!user?.id) {
+        console.error("User not authenticated");
+        toast.error("Erro de autenticação. Por favor, faça login novamente.");
+        navigate("/auth");
+        return;
+      }
+
+      // Primeiro cria o usuário na tabela 'users' se não existir
+      const { error: userError } = await supabase
+        .from('users')
+        .upsert({
+          id: user.id,
+          nome: user.email?.split('@')[0] || 'Usuário',
+          email: user.email
+        }, {
+          onConflict: 'id'
+        });
+      
+      if (userError) {
+        console.error('Error ensuring user exists:', userError);
+      }
+      
+      // Agora salva a resposta
+      const { error } = await supabase
         .from('answers')
         .upsert({
           question_id: questionId,
           value: value,
-          user_id: user?.id
+          user_id: user.id
         }, {
           onConflict: 'user_id,question_id'
         });
@@ -137,21 +159,21 @@ const Quiz: React.FC = () => {
       // Adiciona log para debug
       console.log('Enviando respostas:', answers);
   
-      const result = await completeQuiz();
-      
-      // Adiciona log para debug do resultado
-      console.log('Resultado do cálculo:', result);
-      
-      if (!result) {
-        toast.error("Erro ao calcular perfis. Por favor, verifique se todas as respostas foram salvas corretamente.");
-        return;
+      try {
+        await completeQuiz();
+        // Navegação independente do resultado do completeQuiz
+        navigate("/result");
+      } catch (error) {
+        console.error("Erro ao completar quiz:", error);
+        toast.error("Houve um erro ao processar suas respostas, mas você será redirecionado para os resultados.");
+        // Mesmo com erro, navegamos para a página de resultados
+        navigate("/result");
       }
-      
-      // Se chegou aqui, significa que deu tudo certo
-      navigate("/result");
     } catch (error) {
       console.error("Erro detalhado ao completar quiz:", error);
-      toast.error("Erro ao processar respostas. Detalhes no console para debug.");
+      toast.error("Erro ao processar respostas. Tentando navegar para os resultados mesmo assim.");
+      // Última tentativa de navegação em caso de erro
+      navigate("/result");
     } finally {
       setIsCompletingQuiz(false);
     }
