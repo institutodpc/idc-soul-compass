@@ -44,22 +44,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signUp = async (email: string, password: string, name: string, whatsapp: string) => {
     try {
-      // First create the user entry in the 'users' table
-      const { error: insertError } = await supabase
-        .from('users')
-        .insert({
-          email: email.toLowerCase().trim(),
-          nome: name, // Changed from 'name' to 'nome' to match the database schema
-          whatsapp
-        });
-
-      if (insertError) {
-        console.error("Error inserting user:", insertError);
-        throw insertError;
-      }
-
-      // Then register in auth
-      const { error } = await supabase.auth.signUp({
+      // First create the auth user
+      const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -70,7 +56,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       });
 
-      if (error) throw error;
+      if (authError) throw authError;
+      
+      if (authData.user) {
+        // After successful auth signup, create the user entry in 'users' table
+        const { error: insertError } = await supabase
+          .from('users')
+          .insert({
+            id: authData.user.id, // Use the auth user ID
+            email: email.toLowerCase().trim(),
+            nome: name, // Use 'nome' as that's the column name in the database
+            whatsapp
+          });
+
+        if (insertError) {
+          console.error("Error inserting user:", insertError);
+          throw insertError;
+        }
+      }
+
       toast.success('Cadastro realizado com sucesso!');
       navigate('/quiz');
     } catch (error: any) {

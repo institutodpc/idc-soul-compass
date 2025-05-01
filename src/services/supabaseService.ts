@@ -43,16 +43,20 @@ export const saveUserProfile = async (user: User): Promise<void> => {
   
   if (!userId) throw new Error("User is not authenticated");
   
+  // Use the correct field name 'nome' instead of 'name'
   const { error } = await supabase
     .from('users')
     .insert({
       id: userId,
-      nome: user.name,
+      nome: user.name, // Map 'name' from our app to 'nome' in the database
       email: user.email,
       whatsapp: user.whatsapp
     });
   
-  if (error) throw error;
+  if (error) {
+    console.error("Error saving user profile:", error);
+    throw error;
+  }
 };
 
 // Fetch profiles

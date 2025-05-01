@@ -26,31 +26,26 @@ const SignUpForm = () => {
     setIsSubmitting(true);
     
     try {
-      // First check if email is already registered in our users table
-      const { data: existingUsers, error: queryError } = await supabase
-        .from('users')
-        .select('email')
-        .eq('email', data.email.toLowerCase().trim())
-        .maybeSingle();
-
-      if (queryError) {
-        console.error('Error checking existing email:', queryError);
+      // First check if email is already registered in auth
+      const { data: authData, error: authError } = await supabase.auth.admin.getUserByEmail(data.email);
+      
+      if (authError && !authError.message.includes('not found')) {
+        console.error('Error checking existing auth email:', authError);
         throw new Error('Erro ao verificar email existente');
       }
 
-      // If user exists in either table, show error
-      if (existingUsers) {
+      // If user exists, show error
+      if (authData?.user) {
         toast.error('🚫 Este e-mail já foi cadastrado. Utilize outro para prosseguir.');
         setIsSubmitting(false);
         return;
       }
 
-      // Use a random password since we don't collect it in the form
+      // Generate a random password for the user
       const randomPassword = Math.random().toString(36).slice(-10);
       
       // Proceed with signup
-      await signUp(data.email, randomPassword, data.name, data.whatsapp);
-      navigate('/quiz');
+      await signUp(data.email, randomPassword, data.name, data.whatsapp.replace(/\D/g, ''));
     } catch (error: any) {
       console.error('Signup error:', error);
       if (error.message?.includes('already registered')) {
