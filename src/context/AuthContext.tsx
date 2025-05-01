@@ -47,13 +47,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // First create the user entry in the 'users' table
       const { error: insertError } = await supabase
         .from('users')
-        .insert([
-          {
-            email: email.toLowerCase().trim(),
-            name,
-            whatsapp
-          }
-        ]);
+        .insert({
+          email: email.toLowerCase().trim(),
+          nome: name, // Changed from 'name' to 'nome' to match the database schema
+          whatsapp
+        });
 
       if (insertError) {
         console.error("Error inserting user:", insertError);
