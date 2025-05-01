@@ -2,16 +2,24 @@
 import React from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Profile } from "@/types/quiz";
+import { Lock } from "lucide-react";
 
 interface ResultCardProps {
   profile: Profile;
   isPrimary?: boolean;
-  onReset?: () => void;
+  isLocked?: boolean;
 }
 
-const ResultCard: React.FC<ResultCardProps> = ({ profile, isPrimary = false }) => {
+const ResultCard: React.FC<ResultCardProps> = ({ profile, isPrimary = false, isLocked = false }) => {
   return (
-    <Card className={`w-full max-w-lg shadow-lg border-0 ${isPrimary ? "bg-gradient-to-r from-persona-orange/10 to-persona-pink/10" : ""}`}>
+    <Card className={`w-full max-w-lg shadow-lg border-0 relative ${isPrimary ? "bg-gradient-to-r from-persona-orange/10 to-persona-pink/10" : ""}`}>
+      {isLocked && (
+        <div className="absolute inset-0 backdrop-blur-md flex flex-col items-center justify-center z-10 bg-white/30 rounded-lg">
+          <Lock className="h-12 w-12 text-gray-500 mb-2" />
+          <p className="font-semibold text-gray-600 text-lg">Disponível para Assinantes</p>
+        </div>
+      )}
+      
       <CardHeader className="text-center">
         <h3 className={`text-2xl font-bold ${isPrimary ? "text-transparent bg-clip-text bg-persona-gradient" : ""}`}>
           {isPrimary ? `Seu perfil principal é: ${profile.name}` : profile.name}

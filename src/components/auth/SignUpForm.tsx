@@ -9,12 +9,10 @@ import { formatPhoneNumber } from '@/lib/phoneFormatter';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { User } from '@supabase/supabase-js';
 
 interface SignUpFormData {
   name: string;
   email: string;
-  password: string;
   whatsapp: string;
 }
 
@@ -40,34 +38,18 @@ const SignUpForm = () => {
         throw new Error('Erro ao verificar email existente');
       }
 
-      // Check if email exists in auth system
-      const { data: authData, error: authError } = await supabase.auth.admin.listUsers();
-      
-      let existingAuthUser = false;
-      if (authData && authData.users) {
-        existingAuthUser = authData.users.some(
-          (user: any) => {
-            if (user && user.email) {
-              return user.email.toLowerCase() === data.email.toLowerCase().trim();
-            }
-            return false;
-          }
-        );
-      }
-      
-      if (authError) {
-        console.error('Error checking auth users:', authError);
-      }
-
       // If user exists in either table, show error
-      if (existingUsers || existingAuthUser) {
+      if (existingUsers) {
         toast.error('🚫 Este e-mail já foi cadastrado. Utilize outro para prosseguir.');
         setIsSubmitting(false);
         return;
       }
 
+      // Use a random password since we don't collect it in the form
+      const randomPassword = Math.random().toString(36).slice(-10);
+      
       // Proceed with signup
-      await signUp(data.email, data.password, data.name, data.whatsapp);
+      await signUp(data.email, randomPassword, data.name, data.whatsapp);
       navigate('/quiz');
     } catch (error: any) {
       console.error('Signup error:', error);
@@ -115,24 +97,6 @@ const SignUpForm = () => {
           className="bg-white/70 backdrop-blur-sm"
         />
         {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="password">Senha*</Label>
-        <Input
-          id="password"
-          type="password"
-          {...register('password', { 
-            required: 'Senha é obrigatória',
-            minLength: {
-              value: 6,
-              message: 'Senha deve ter no mínimo 6 caracteres'
-            }
-          })}
-          placeholder="••••••••"
-          className="bg-white/70 backdrop-blur-sm"
-        />
-        {errors.password && <p className="text-xs text-red-500">{errors.password.message}</p>}
       </div>
 
       <div className="space-y-2">

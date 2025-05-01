@@ -44,6 +44,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signUp = async (email: string, password: string, name: string, whatsapp: string) => {
     try {
+      // First create the user entry in the 'users' table
+      const { error: insertError } = await supabase
+        .from('users')
+        .insert([
+          {
+            email: email.toLowerCase().trim(),
+            name,
+            whatsapp
+          }
+        ]);
+
+      if (insertError) {
+        console.error("Error inserting user:", insertError);
+        throw insertError;
+      }
+
+      // Then register in auth
       const { error } = await supabase.auth.signUp({
         email,
         password,
@@ -56,8 +73,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (error) throw error;
-      toast.success('Conta criada com sucesso!');
-      navigate('/');
+      toast.success('Cadastro realizado com sucesso!');
+      navigate('/quiz');
     } catch (error: any) {
       toast.error(error.message);
     }

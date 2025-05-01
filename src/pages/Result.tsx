@@ -18,8 +18,17 @@ const Result = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [primaryProfile, setPrimaryProfile] = useState<Profile | null>(null);
-  const [secondaryProfiles, setSecondaryProfiles] = useState<Profile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Placeholder profiles for the locked cards
+  const placeholderProfile: Profile = {
+    id: 0,
+    name: "Perfil Secundário",
+    description: "Este é um perfil secundário disponível apenas para assinantes.",
+    verse: "Versículo bíblico relacionado ao perfil.",
+    tip: "Uma dica prática para aplicar este perfil.",
+    practice: "Uma prática espiritual recomendada."
+  };
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -59,42 +68,32 @@ const Result = () => {
         }
 
         // Get profile details for the calculated profile IDs
-        const profileIds = profileResults.map((result: ProfileResult) => result.profile_id);
-        console.log("Profile IDs:", profileIds);
+        const primaryProfileId = profileResults[0].profile_id;
+        console.log("Primary Profile ID:", primaryProfileId);
         
-        const { data: profiles, error: profilesError } = await supabase
+        const { data: profileData, error: profileError } = await supabase
           .from('profiles')
           .select('*')
-          .in('id', profileIds);
+          .eq('id', primaryProfileId)
+          .single();
 
-        if (profilesError) {
-          console.error("Profiles Error:", profilesError);
-          throw profilesError;
+        if (profileError) {
+          console.error("Profile Error:", profileError);
+          throw profileError;
         }
 
-        console.log("Fetched profiles:", profiles);
+        console.log("Fetched profile:", profileData);
         // Map the profile data to our Profile type
-        const typedProfiles: Profile[] = profiles.map(p => ({
-          id: p.id,
-          name: p.nome || '',
-          description: p.descricao || '',
-          verse: p.versiculo || '',
-          tip: p.dica || '',
-          practice: p.pratica || ''
-        }));
+        const typedProfile: Profile = {
+          id: profileData.id,
+          name: profileData.nome || '',
+          description: profileData.descricao || '',
+          verse: profileData.versiculo || '',
+          tip: profileData.dica || '',
+          practice: profileData.pratica || ''
+        };
 
-        // Find the primary profile (highest score)
-        const primary = typedProfiles.find(p => 
-          p.id === profileResults[0].profile_id
-        ) || null;
-
-        // Find secondary profiles (up to 2)
-        const secondary = typedProfiles
-          .filter(p => p.id !== primary?.id)
-          .slice(0, 2);
-
-        setPrimaryProfile(primary);
-        setSecondaryProfiles(secondary);
+        setPrimaryProfile(typedProfile);
       } catch (error) {
         console.error("Error fetching results:", error);
         toast.error("Ocorreu um erro ao buscar seus resultados");
@@ -133,22 +132,21 @@ const Result = () => {
           </div>
         )}
         
-        {secondaryProfiles.length > 0 && (
-          <>
-            <h3 className="text-xl font-semibold text-center mt-8 mb-4">
-              Seus perfis secundários são:
-            </h3>
-            
-            <div className="grid gap-6 md:grid-cols-2">
-              {secondaryProfiles.map((profile) => (
-                <ResultCard 
-                  key={profile.id} 
-                  profile={profile}
-                />
-              ))}
-            </div>
-          </>
-        )}
+        <h3 className="text-xl font-semibold text-center mt-8 mb-4">
+          Seus perfis secundários são:
+        </h3>
+        
+        <div className="grid gap-6 md:grid-cols-2">
+          {/* Always display two locked secondary profile cards */}
+          <ResultCard 
+            profile={placeholderProfile}
+            isLocked={true}
+          />
+          <ResultCard 
+            profile={placeholderProfile}
+            isLocked={true}
+          />
+        </div>
         
         <WhatsAppInvite />
       </div>
