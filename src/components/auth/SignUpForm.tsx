@@ -26,16 +26,20 @@ const SignUpForm = () => {
     setIsSubmitting(true);
     
     try {
-      // First check if email is already registered in auth
-      const { data: authData, error: authError } = await supabase.auth.admin.getUserByEmail(data.email);
-      
-      if (authError && !authError.message.includes('not found')) {
-        console.error('Error checking existing auth email:', authError);
+      // Check if email is already registered in our users table
+      const { data: existingUsers, error: queryError } = await supabase
+        .from('users')
+        .select('email')
+        .eq('email', data.email.toLowerCase().trim())
+        .maybeSingle();
+
+      if (queryError) {
+        console.error('Error checking existing email:', queryError);
         throw new Error('Erro ao verificar email existente');
       }
 
-      // If user exists, show error
-      if (authData?.user) {
+      // If user exists in the users table, show error
+      if (existingUsers) {
         toast.error('🚫 Este e-mail já foi cadastrado. Utilize outro para prosseguir.');
         setIsSubmitting(false);
         return;
