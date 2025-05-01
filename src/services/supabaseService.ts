@@ -69,7 +69,14 @@ export const fetchProfiles = async (): Promise<Profile[]> => {
     description: profile.descricao || '',
     verse: profile.versiculo || '',
     tip: profile.dica || '',
-    practice: profile.pratica || ''
+    practice: profile.pratica || '',
+    refuge: profile.refuge || '',
+    biblical_character: profile.biblical_character || '',
+    exaltation: profile.exaltation || '',
+    formation: profile.formation || '',
+    common_pains: profile.common_pains || '',
+    steps_to_exit: profile.steps_to_exit || '',
+    prophetic_summary: profile.prophetic_summary || ''
   })) || [];
 };
 

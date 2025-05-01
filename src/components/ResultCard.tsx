@@ -29,31 +29,109 @@ const ResultCard: React.FC<ResultCardProps> = ({ profile, isPrimary = false, isL
       <CardContent className="space-y-6">
         <p className="text-lg italic text-center">{profile.description}</p>
         
-        <div className="space-y-4 pt-4">
-          <div className="flex items-start">
-            <span className="text-xl mr-3">📖</span>
-            <div>
-              <p className="font-semibold">Versículo</p>
-              <p>{profile.verse}</p>
-            </div>
+        {!isLocked && (
+          <div className="space-y-6 pt-4">
+            {profile.refuge && (
+              <div className="flex items-start">
+                <span className="text-xl mr-3">📌</span>
+                <div>
+                  <p className="font-semibold">Refúgio que procura</p>
+                  <p>{profile.refuge}</p>
+                </div>
+              </div>
+            )}
+            
+            {profile.biblical_character && (
+              <div className="flex items-start">
+                <span className="text-xl mr-3">📖</span>
+                <div>
+                  <p className="font-semibold">Personagem bíblico que viveu isso</p>
+                  <p>{profile.biblical_character}</p>
+                </div>
+              </div>
+            )}
+            
+            {profile.exaltation && (
+              <div className="flex items-start">
+                <span className="text-xl mr-3">✨</span>
+                <div>
+                  <p className="font-semibold">Como Deus o exaltou</p>
+                  <p>{profile.exaltation}</p>
+                </div>
+              </div>
+            )}
+            
+            {profile.formation && (
+              <div className="flex items-start">
+                <span className="text-xl mr-3">🧠</span>
+                <div>
+                  <p className="font-semibold">Como esse perfil se forma</p>
+                  <p>{profile.formation}</p>
+                </div>
+              </div>
+            )}
+            
+            {profile.common_pains && (
+              <div className="flex items-start">
+                <span className="text-xl mr-3">💔</span>
+                <div>
+                  <p className="font-semibold">Dores em comum</p>
+                  <p>{profile.common_pains}</p>
+                </div>
+              </div>
+            )}
+            
+            {profile.steps_to_exit && (
+              <div className="flex items-start">
+                <span className="text-xl mr-3">🛤️</span>
+                <div>
+                  <p className="font-semibold">O que precisa fazer para sair desse perfil</p>
+                  <p>{profile.steps_to_exit}</p>
+                </div>
+              </div>
+            )}
+            
+            {profile.prophetic_summary && (
+              <div className="flex items-start">
+                <span className="text-xl mr-3">⚔️</span>
+                <div>
+                  <p className="font-semibold">Resumo Profético</p>
+                  <p>{profile.prophetic_summary}</p>
+                </div>
+              </div>
+            )}
+            
+            {profile.verse && (
+              <div className="flex items-start">
+                <span className="text-xl mr-3">📖</span>
+                <div>
+                  <p className="font-semibold">Versículo</p>
+                  <p>{profile.verse}</p>
+                </div>
+              </div>
+            )}
+            
+            {profile.tip && (
+              <div className="flex items-start">
+                <span className="text-xl mr-3">✅</span>
+                <div>
+                  <p className="font-semibold">Dica Prática</p>
+                  <p>{profile.tip}</p>
+                </div>
+              </div>
+            )}
+            
+            {profile.practice && (
+              <div className="flex items-start">
+                <span className="text-xl mr-3">🎯</span>
+                <div>
+                  <p className="font-semibold">Prática Espiritual</p>
+                  <p>{profile.practice}</p>
+                </div>
+              </div>
+            )}
           </div>
-          
-          <div className="flex items-start">
-            <span className="text-xl mr-3">✅</span>
-            <div>
-              <p className="font-semibold">Dica Prática</p>
-              <p>{profile.tip}</p>
-            </div>
-          </div>
-          
-          <div className="flex items-start">
-            <span className="text-xl mr-3">🎯</span>
-            <div>
-              <p className="font-semibold">Prática Espiritual</p>
-              <p>{profile.practice}</p>
-            </div>
-          </div>
-        </div>
+        )}
       </CardContent>
     </Card>
   );

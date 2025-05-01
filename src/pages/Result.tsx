@@ -90,7 +90,14 @@ const Result = () => {
           description: profileData.descricao || '',
           verse: profileData.versiculo || '',
           tip: profileData.dica || '',
-          practice: profileData.pratica || ''
+          practice: profileData.pratica || '',
+          refuge: profileData.refuge || '',
+          biblical_character: profileData.biblical_character || '',
+          exaltation: profileData.exaltation || '',
+          formation: profileData.formation || '',
+          common_pains: profileData.common_pains || '',
+          steps_to_exit: profileData.steps_to_exit || '',
+          prophetic_summary: profileData.prophetic_summary || ''
         };
 
         setPrimaryProfile(typedProfile);
