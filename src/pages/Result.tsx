@@ -108,7 +108,7 @@ const Result = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-4">
+      <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-b from-white to-gray-50">
         <Logo className="mb-8" />
         <div className="text-center">
           <p className="text-lg">Calculando seus resultados...</p>
@@ -118,27 +118,144 @@ const Result = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4">
-      <Logo className="mb-8" />
-      
-      <div className="w-full max-w-4xl space-y-8">
-        {primaryProfile ? (
-          <ResultCard 
-            profile={primaryProfile} 
-            isPrimary={true}
-          />
-        ) : (
-          <div className="text-center p-6">
-            <p className="text-lg text-red-500">Não foi possível encontrar seu perfil principal.</p>
+    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 px-4 py-8 md:py-12">
+      <div className="max-w-4xl mx-auto">
+        {/* Logo and header */}
+        <div className="flex justify-center mb-8">
+          <Logo />
+        </div>
+        
+        {/* Main heading */}
+        <h1 className="text-center text-2xl font-medium mb-2">
+          Seu perfil principal é:
+        </h1>
+        
+        {/* Profile name highlight */}
+        {primaryProfile && (
+          <h2 className="text-center text-3xl font-bold text-persona-pink uppercase mb-6">
+            {primaryProfile.name}
+          </h2>
+        )}
+        
+        {/* Profile description */}
+        {primaryProfile && (
+          <p className="text-center text-gray-700 max-w-2xl mx-auto mb-10">
+            {primaryProfile.description}
+          </p>
+        )}
+        
+        {/* Main results card */}
+        <div className="mb-12">
+          {primaryProfile ? (
+            <div className="bg-gradient-to-r from-persona-orange/90 to-persona-pink/90 rounded-xl p-1">
+              <div className="bg-white rounded-lg p-6">
+                <h3 className="text-xl font-bold text-persona-pink text-center mb-6">
+                  COMO ESSE PERFIL SE FORMA
+                </h3>
+                
+                <div className="space-y-4">
+                  {primaryProfile.formation && (
+                    <p className="text-gray-700">{primaryProfile.formation}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center p-6 bg-white rounded-lg shadow">
+              <p className="text-lg text-red-500">Não foi possível encontrar seu perfil principal.</p>
+            </div>
+          )}
+        </div>
+        
+        {/* Profile details grid */}
+        {primaryProfile && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+            {/* Left column */}
+            <div className="bg-gradient-to-r from-persona-orange/90 to-persona-pink/90 rounded-xl p-1">
+              <div className="bg-white h-full rounded-lg p-6">
+                <h3 className="text-xl font-bold text-persona-pink text-center mb-6">
+                  REFÚGIO QUE PROCURA
+                </h3>
+                
+                <div className="space-y-4">
+                  {primaryProfile.refuge && (
+                    <p className="text-gray-700">{primaryProfile.refuge}</p>
+                  )}
+                  
+                  {primaryProfile.biblical_character && (
+                    <div className="mt-4">
+                      <h4 className="font-semibold">Personagem bíblico que viveu isso:</h4>
+                      <p className="text-gray-700">{primaryProfile.biblical_character}</p>
+                    </div>
+                  )}
+                  
+                  {primaryProfile.exaltation && (
+                    <div className="mt-4">
+                      <h4 className="font-semibold">Como Deus o exaltou:</h4>
+                      <p className="text-gray-700">{primaryProfile.exaltation}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+            
+            {/* Right column */}
+            <div className="bg-gradient-to-r from-persona-orange/90 to-persona-pink/90 rounded-xl p-1">
+              <div className="bg-white h-full rounded-lg p-6">
+                <h3 className="text-xl font-bold text-persona-pink text-center mb-6">
+                  DORES EM COMUM
+                </h3>
+                
+                <div className="space-y-4">
+                  {primaryProfile.common_pains && (
+                    <p className="text-gray-700">{primaryProfile.common_pains}</p>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         )}
         
-        <h3 className="text-xl font-semibold text-center mt-8 mb-4">
+        {/* Steps to exit section */}
+        {primaryProfile && primaryProfile.steps_to_exit && (
+          <div className="mb-12">
+            <div className="bg-gradient-to-r from-persona-orange/90 to-persona-pink/90 rounded-xl p-1">
+              <div className="bg-white rounded-lg p-6">
+                <h3 className="text-xl font-bold text-persona-pink text-center mb-6">
+                  O QUE PRECISA FAZER PARA SAIR DESSE PERFIL
+                </h3>
+                
+                <div className="space-y-4">
+                  <p className="text-gray-700">{primaryProfile.steps_to_exit}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {/* Summary section */}
+        {primaryProfile && primaryProfile.prophetic_summary && (
+          <div className="mb-12">
+            <div className="bg-gradient-to-r from-persona-orange/90 to-persona-pink/90 rounded-xl p-1">
+              <div className="bg-white rounded-lg p-6">
+                <h3 className="text-xl font-bold text-center mb-6 text-gray-800">
+                  RESUMO
+                </h3>
+                
+                <div className="space-y-4">
+                  <p className="text-gray-700">{primaryProfile.prophetic_summary}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {/* Secondary profiles */}
+        <h3 className="text-xl font-semibold text-center mt-12 mb-6">
           Seus perfis secundários são:
         </h3>
         
-        <div className="grid gap-6 md:grid-cols-2">
-          {/* Always display two locked secondary profile cards */}
+        <div className="grid gap-6 md:grid-cols-2 mb-12">
           <ResultCard 
             profile={placeholderProfile}
             isLocked={true}
@@ -149,6 +266,7 @@ const Result = () => {
           />
         </div>
         
+        {/* WhatsApp invite */}
         <WhatsAppInvite />
       </div>
     </div>
