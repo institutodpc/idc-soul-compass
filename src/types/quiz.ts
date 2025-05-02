@@ -19,9 +19,6 @@ export interface Profile {
   id: number;
   name: string;
   description: string;
-  verse: string;
-  tip: string;
-  practice: string;
   refuge?: string;
   biblical_character?: string;
   exaltation?: string;

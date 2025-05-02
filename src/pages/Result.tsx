@@ -24,10 +24,7 @@ const Result = () => {
   const placeholderProfile: Profile = {
     id: 0,
     name: "Perfil Secundário",
-    description: "Este é um perfil secundário disponível apenas para assinantes.",
-    verse: "Versículo bíblico relacionado ao perfil.",
-    tip: "Uma dica prática para aplicar este perfil.",
-    practice: "Uma prática espiritual recomendada."
+    description: "Este é um perfil secundário disponível apenas para assinantes."
   };
 
   useEffect(() => {
@@ -88,9 +85,6 @@ const Result = () => {
           id: profileData.id,
           name: profileData.nome || '',
           description: profileData.descricao || '',
-          verse: profileData.versiculo || '',
-          tip: profileData.dica || '',
-          practice: profileData.pratica || '',
           refuge: profileData.refuge || '',
           biblical_character: profileData.biblical_character || '',
           exaltation: profileData.exaltation || '',

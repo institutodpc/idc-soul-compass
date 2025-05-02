@@ -100,36 +100,6 @@ const ResultCard: React.FC<ResultCardProps> = ({ profile, isPrimary = false, isL
                 </div>
               </div>
             )}
-            
-            {profile.verse && (
-              <div className="flex items-start">
-                <span className="text-xl mr-3">📖</span>
-                <div>
-                  <p className="font-semibold">Versículo</p>
-                  <p>{profile.verse}</p>
-                </div>
-              </div>
-            )}
-            
-            {profile.tip && (
-              <div className="flex items-start">
-                <span className="text-xl mr-3">✅</span>
-                <div>
-                  <p className="font-semibold">Dica Prática</p>
-                  <p>{profile.tip}</p>
-                </div>
-              </div>
-            )}
-            
-            {profile.practice && (
-              <div className="flex items-start">
-                <span className="text-xl mr-3">🎯</span>
-                <div>
-                  <p className="font-semibold">Prática Espiritual</p>
-                  <p>{profile.practice}</p>
-                </div>
-              </div>
-            )}
           </div>
         )}
       </CardContent>

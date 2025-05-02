@@ -78,46 +78,37 @@ export type Database = {
           biblical_character: string | null
           common_pains: string | null
           descricao: string | null
-          dica: string | null
           exaltation: string | null
           formation: string | null
           id: number
           nome: string | null
-          pratica: string | null
           prophetic_summary: string | null
           refuge: string | null
           steps_to_exit: string | null
-          versiculo: string | null
         }
         Insert: {
           biblical_character?: string | null
           common_pains?: string | null
           descricao?: string | null
-          dica?: string | null
           exaltation?: string | null
           formation?: string | null
           id: number
           nome?: string | null
-          pratica?: string | null
           prophetic_summary?: string | null
           refuge?: string | null
           steps_to_exit?: string | null
-          versiculo?: string | null
         }
         Update: {
           biblical_character?: string | null
           common_pains?: string | null
           descricao?: string | null
-          dica?: string | null
           exaltation?: string | null
           formation?: string | null
           id?: number
           nome?: string | null
-          pratica?: string | null
           prophetic_summary?: string | null
           refuge?: string | null
           steps_to_exit?: string | null
-          versiculo?: string | null
         }
         Relationships: []
       }
