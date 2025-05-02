@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,6 +7,13 @@ import ResultCard from "@/components/ResultCard";
 import Logo from "@/components/Logo";
 import WhatsAppInvite from "@/components/WhatsAppInvite";
 import { useAuth } from "@/context/AuthContext";
+import { 
+  Accordion, 
+  AccordionContent, 
+  AccordionItem, 
+  AccordionTrigger 
+} from "@/components/ui/accordion";
+import { ChevronDown } from "lucide-react";
 
 interface ProfileResult {
   profile_id: number;
@@ -155,109 +161,147 @@ const Result = () => {
           </div>
         </div>
         
-        {/* Main results card with gradient border */}
-        <div className="mb-16">
-          {primaryProfile ? (
-            <div className="bg-gradient-to-r from-persona-orange to-persona-pink p-[3px] rounded-xl shadow-lg">
-              <div className="bg-white rounded-lg p-8">
-                <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-persona-gradient text-center mb-8">
-                  COMO ESSE PERFIL SE FORMA
-                </h3>
-                
-                <div className="space-y-4">
-                  {primaryProfile.formation && (
-                    <p className="text-gray-700 text-lg leading-relaxed">{primaryProfile.formation}</p>
-                  )}
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="text-center p-6 bg-white rounded-lg shadow">
-              <p className="text-lg text-red-500">Não foi possível encontrar seu perfil principal.</p>
-            </div>
-          )}
-        </div>
-        
-        {/* Profile details grid with enhanced visuals */}
+        {/* FAQ-style accordion for profile details */}
         {primaryProfile && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-            {/* Left column */}
-            <div className="bg-gradient-to-br from-persona-orange to-persona-pink p-[3px] rounded-xl shadow-lg">
-              <div className="bg-white h-full rounded-lg p-8">
-                <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-persona-gradient text-center mb-8">
-                  REFÚGIO QUE PROCURA
-                </h3>
-                
-                <div className="space-y-6">
-                  {primaryProfile.refuge && (
-                    <p className="text-gray-700">{primaryProfile.refuge}</p>
-                  )}
-                  
-                  {primaryProfile.biblical_character && (
-                    <div className="mt-6 p-4 bg-gray-50 rounded-lg border-l-4 border-persona-pink">
-                      <h4 className="font-semibold text-gray-800">Personagem bíblico que viveu isso:</h4>
-                      <p className="text-gray-700 mt-2">{primaryProfile.biblical_character}</p>
+          <div className="space-y-6 mb-16">
+            {/* Formation section */}
+            <div className="bg-gradient-to-r from-persona-orange to-persona-pink p-[3px] rounded-xl shadow-lg overflow-hidden">
+              <Accordion type="single" collapsible className="bg-white rounded-lg">
+                <AccordionItem value="formation" className="border-0">
+                  <AccordionTrigger className="px-8 py-6 hover:no-underline group">
+                    <div className="flex items-center">
+                      <div className="flex items-center justify-center w-10 h-10 rounded-full bg-persona-gradient text-white mr-4">
+                        <span className="font-bold">1</span>
+                      </div>
+                      <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-persona-gradient group-hover:opacity-75 transition-opacity">
+                        COMO ESSE PERFIL SE FORMA
+                      </h3>
                     </div>
-                  )}
-                  
-                  {primaryProfile.exaltation && (
-                    <div className="mt-6 p-4 bg-gray-50 rounded-lg border-l-4 border-persona-orange">
-                      <h4 className="font-semibold text-gray-800">Como Deus o exaltou:</h4>
-                      <p className="text-gray-700 mt-2">{primaryProfile.exaltation}</p>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-8 pb-6 pt-2">
+                    <div className="pl-14">
+                      {primaryProfile.formation && (
+                        <p className="text-gray-700 text-lg leading-relaxed">{primaryProfile.formation}</p>
+                      )}
                     </div>
-                  )}
-                </div>
-              </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </div>
             
-            {/* Right column */}
-            <div className="bg-gradient-to-bl from-persona-orange to-persona-pink p-[3px] rounded-xl shadow-lg">
-              <div className="bg-white h-full rounded-lg p-8">
-                <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-persona-gradient text-center mb-8">
-                  DORES EM COMUM
-                </h3>
-                
-                <div className="space-y-4">
-                  {primaryProfile.common_pains && (
-                    <p className="text-gray-700">{primaryProfile.common_pains}</p>
-                  )}
-                </div>
-              </div>
+            {/* Refuge section */}
+            <div className="bg-gradient-to-r from-persona-orange to-persona-pink p-[3px] rounded-xl shadow-lg overflow-hidden">
+              <Accordion type="single" collapsible className="bg-white rounded-lg">
+                <AccordionItem value="refuge" className="border-0">
+                  <AccordionTrigger className="px-8 py-6 hover:no-underline group">
+                    <div className="flex items-center">
+                      <div className="flex items-center justify-center w-10 h-10 rounded-full bg-persona-gradient text-white mr-4">
+                        <span className="font-bold">2</span>
+                      </div>
+                      <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-persona-gradient group-hover:opacity-75 transition-opacity">
+                        REFÚGIO QUE PROCURA
+                      </h3>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-8 pb-6 pt-2">
+                    <div className="pl-14 space-y-6">
+                      {primaryProfile.refuge && (
+                        <p className="text-gray-700">{primaryProfile.refuge}</p>
+                      )}
+                      
+                      {primaryProfile.biblical_character && (
+                        <div className="p-4 bg-gray-50 rounded-lg border-l-4 border-persona-pink">
+                          <h4 className="font-semibold text-gray-800">Personagem bíblico que viveu isso:</h4>
+                          <p className="text-gray-700 mt-2">{primaryProfile.biblical_character}</p>
+                        </div>
+                      )}
+                      
+                      {primaryProfile.exaltation && (
+                        <div className="p-4 bg-gray-50 rounded-lg border-l-4 border-persona-orange">
+                          <h4 className="font-semibold text-gray-800">Como Deus o exaltou:</h4>
+                          <p className="text-gray-700 mt-2">{primaryProfile.exaltation}</p>
+                        </div>
+                      )}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </div>
-          </div>
-        )}
-        
-        {/* Steps to exit section with elegant styling */}
-        {primaryProfile && primaryProfile.steps_to_exit && (
-          <div className="mb-16">
-            <div className="bg-gradient-to-r from-persona-orange to-persona-pink p-[3px] rounded-xl shadow-lg">
-              <div className="bg-white rounded-lg p-8">
-                <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-persona-gradient text-center mb-8">
-                  O QUE PRECISA FAZER PARA SAIR DESSE PERFIL
-                </h3>
-                
-                <div className="space-y-4">
-                  <p className="text-gray-700 text-lg leading-relaxed">{primaryProfile.steps_to_exit}</p>
-                </div>
-              </div>
+            
+            {/* Common Pains section */}
+            <div className="bg-gradient-to-r from-persona-orange to-persona-pink p-[3px] rounded-xl shadow-lg overflow-hidden">
+              <Accordion type="single" collapsible className="bg-white rounded-lg">
+                <AccordionItem value="pains" className="border-0">
+                  <AccordionTrigger className="px-8 py-6 hover:no-underline group">
+                    <div className="flex items-center">
+                      <div className="flex items-center justify-center w-10 h-10 rounded-full bg-persona-gradient text-white mr-4">
+                        <span className="font-bold">3</span>
+                      </div>
+                      <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-persona-gradient group-hover:opacity-75 transition-opacity">
+                        DORES EM COMUM
+                      </h3>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-8 pb-6 pt-2">
+                    <div className="pl-14">
+                      {primaryProfile.common_pains && (
+                        <p className="text-gray-700">{primaryProfile.common_pains}</p>
+                      )}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </div>
-          </div>
-        )}
-        
-        {/* Summary section */}
-        {primaryProfile && primaryProfile.prophetic_summary && (
-          <div className="mb-16">
-            <div className="bg-gradient-to-r from-persona-orange to-persona-pink p-[3px] rounded-xl shadow-lg">
-              <div className="bg-white rounded-lg p-8">
-                <h3 className="text-2xl font-bold text-center mb-8 text-gray-800">
-                  RESUMO
-                </h3>
-                
-                <div className="space-y-4">
-                  <p className="text-gray-700 text-lg leading-relaxed">{primaryProfile.prophetic_summary}</p>
-                </div>
+            
+            {/* Steps to exit section */}
+            {primaryProfile.steps_to_exit && (
+              <div className="bg-gradient-to-r from-persona-orange to-persona-pink p-[3px] rounded-xl shadow-lg overflow-hidden">
+                <Accordion type="single" collapsible className="bg-white rounded-lg">
+                  <AccordionItem value="steps" className="border-0">
+                    <AccordionTrigger className="px-8 py-6 hover:no-underline group">
+                      <div className="flex items-center">
+                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-persona-gradient text-white mr-4">
+                          <span className="font-bold">4</span>
+                        </div>
+                        <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-persona-gradient group-hover:opacity-75 transition-opacity">
+                          O QUE PRECISA FAZER PARA SAIR DESSE PERFIL
+                        </h3>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="px-8 pb-6 pt-2">
+                      <div className="pl-14">
+                        <p className="text-gray-700 text-lg leading-relaxed">{primaryProfile.steps_to_exit}</p>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
               </div>
-            </div>
+            )}
+            
+            {/* Summary section */}
+            {primaryProfile.prophetic_summary && (
+              <div className="bg-gradient-to-r from-persona-orange to-persona-pink p-[3px] rounded-xl shadow-lg overflow-hidden">
+                <Accordion type="single" collapsible className="bg-white rounded-lg">
+                  <AccordionItem value="summary" className="border-0">
+                    <AccordionTrigger className="px-8 py-6 hover:no-underline group">
+                      <div className="flex items-center">
+                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-persona-gradient text-white mr-4">
+                          <span className="font-bold">5</span>
+                        </div>
+                        <h3 className="text-2xl font-bold text-gray-800 group-hover:opacity-75 transition-opacity">
+                          RESUMO
+                        </h3>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="px-8 pb-6 pt-2">
+                      <div className="pl-14">
+                        <p className="text-gray-700 text-lg leading-relaxed">{primaryProfile.prophetic_summary}</p>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </div>
+            )}
           </div>
         )}
         
