@@ -45,25 +45,37 @@ export const mockProfiles: Profile[] = [
     id: 1,
     name: "Procrastinador",
     description: "Você tem deixado para amanhã o que Deus já te chamou pra fazer hoje?",
-    verse: "Provérbios 20:4",
-    tip: "Divida tarefas grandes em pequenas e comece agora.",
-    practice: "Baixe o plano de ação semanal IDC."
+    refuge: "Distração e conforto momentâneo.",
+    biblical_character: "Jonas que fugiu de Nínive.",
+    exaltation: "Quando Jonas se arrependeu e cumpriu sua missão.",
+    formation: "Evitando responsabilidades e temendo falhar.",
+    common_pains: "Ansiedade, culpa por tarefas não cumpridas.",
+    steps_to_exit: "Divida tarefas grandes em pequenas e comece agora.",
+    prophetic_summary: "Deus está chamando você para agir hoje, não amanhã."
   },
   {
     id: 2,
     name: "Ansioso",
     description: "Você se preocupa excessivamente com o futuro, esquecendo de confiar em Deus no presente?",
-    verse: "Filipenses 4:6-7",
-    tip: "Pratique exercícios de respiração e oração nos momentos de ansiedade.",
-    practice: "Comece um diário de gratidão diário."
+    refuge: "Planejamento excessivo e controle.",
+    biblical_character: "Marta, preocupada com muitas coisas.",
+    exaltation: "Quando aprendemos a descansar aos pés de Jesus como Maria.",
+    formation: "Tentando controlar o incontrolável.",
+    common_pains: "Insônia, preocupação constante, medo do futuro.",
+    steps_to_exit: "Pratique exercícios de respiração e oração nos momentos de ansiedade.",
+    prophetic_summary: "Deus já está no seu amanhã. Confie no tempo Dele."
   },
   {
     id: 3,
     name: "Perfeccionista",
     description: "Você se cobra demais por resultados perfeitos, esquecendo que a graça de Deus é suficiente?",
-    verse: "2 Coríntios 12:9",
-    tip: "Estabeleça limites realistas para suas tarefas e celebre o progresso.",
-    practice: "Faça uma lista de áreas onde você pode praticar mais a graça consigo mesmo."
+    refuge: "Auto-exigência e crítica constante.",
+    biblical_character: "Paulo lutando contra o espinho na carne.",
+    exaltation: "Quando Paulo compreendeu que na fraqueza a graça se aperfeiçoa.",
+    formation: "Estabelecendo padrões irreais para si mesmo e para outros.",
+    common_pains: "Frustração constante, dificuldade em celebrar conquistas.",
+    steps_to_exit: "Estabeleça limites realistas para suas tarefas e celebre o progresso.",
+    prophetic_summary: "A graça de Deus é suficiente. Você não precisa ser perfeito."
   },
   // More profiles would be added in production
 ];
