@@ -8,6 +8,9 @@ import ResultCard from "@/components/ResultCard";
 import Logo from "@/components/Logo";
 import WhatsAppInvite from "@/components/WhatsAppInvite";
 import { useAuth } from "@/context/AuthContext";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { ChevronDown } from "lucide-react";
 
 interface ProfileResult {
   profile_id: number;
@@ -106,6 +109,56 @@ const Result = () => {
     fetchResults();
   }, [user, navigate]);
 
+  // Format exit steps into an array of ordered steps
+  const formatExitSteps = (stepsText: string | undefined) => {
+    if (!stepsText) return [];
+    
+    // Split by line breaks and filter out empty lines
+    const lines = stepsText.split('\n').filter(line => line.trim().length > 0);
+    const steps = [];
+    
+    let currentStep = '';
+    let currentDescription = '';
+    
+    for (const line of lines) {
+      if (line.startsWith('>')) {
+        // If we already have a step collected, push it before starting a new one
+        if (currentStep) {
+          steps.push({
+            title: currentStep.trim(),
+            description: currentDescription.trim()
+          });
+          currentDescription = '';
+        }
+        // Start a new step
+        currentStep = line.substring(1).trim();
+      } else if (currentStep) {
+        // Add to current description
+        currentDescription += ' ' + line.trim();
+      }
+    }
+    
+    // Add the last step if there is one
+    if (currentStep) {
+      steps.push({
+        title: currentStep.trim(),
+        description: currentDescription.trim()
+      });
+    }
+    
+    return steps;
+  };
+
+  // Format common pains into an array
+  const formatCommonPains = (painsText: string | undefined) => {
+    if (!painsText) return [];
+    
+    // Split by ° and filter out empty lines
+    return painsText.split('°')
+      .map(pain => pain.trim())
+      .filter(pain => pain.length > 0);
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-b from-white to-gray-50">
@@ -118,6 +171,9 @@ const Result = () => {
       </div>
     );
   }
+
+  const exitSteps = formatExitSteps(primaryProfile?.steps_to_exit);
+  const commonPains = formatCommonPains(primaryProfile?.common_pains);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-100 px-4 py-8 md:py-12">
@@ -210,25 +266,38 @@ const Result = () => {
               </div>
             </div>
             
-            {/* Right column */}
+            {/* Right column - Common Pains with new style */}
             <div className="bg-gradient-to-bl from-persona-orange to-persona-pink p-[3px] rounded-xl shadow-lg">
               <div className="bg-white h-full rounded-lg p-8">
                 <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-persona-gradient text-center mb-8">
                   DORES EM COMUM
                 </h3>
                 
-                <div className="space-y-4">
-                  {primaryProfile.common_pains && (
-                    <p className="text-gray-700">{primaryProfile.common_pains}</p>
-                  )}
+                <div className="space-y-6">
+                  {commonPains.map((pain, index) => (
+                    <div 
+                      key={index} 
+                      className={`p-4 rounded-lg flex items-start gap-3 ${
+                        index % 4 === 0 ? "bg-gradient-to-r from-persona-orange/10 to-persona-pink/5 border-l-4 border-persona-orange" :
+                        index % 4 === 1 ? "bg-gradient-to-l from-persona-orange/5 to-persona-pink/10 border-r-4 border-persona-pink" :
+                        index % 4 === 2 ? "bg-gradient-to-b from-persona-orange/10 to-persona-pink/5 border-t-4 border-persona-orange" :
+                        "bg-gradient-to-t from-persona-orange/5 to-persona-pink/10 border-b-4 border-persona-pink"
+                      }`}
+                    >
+                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-persona-gradient flex items-center justify-center text-white font-medium text-sm">
+                        °
+                      </div>
+                      <p className="text-gray-700 leading-relaxed">{pain}</p>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
         )}
         
-        {/* Steps to exit section with elegant styling */}
-        {primaryProfile && primaryProfile.steps_to_exit && (
+        {/* Steps to exit section with FAQ-style accordion */}
+        {primaryProfile && exitSteps.length > 0 && (
           <div className="mb-16">
             <div className="bg-gradient-to-r from-persona-orange to-persona-pink p-[3px] rounded-xl shadow-lg">
               <div className="bg-white rounded-lg p-8">
@@ -236,9 +305,29 @@ const Result = () => {
                   O QUE PRECISA FAZER PARA SAIR DESSE PERFIL
                 </h3>
                 
-                <div className="space-y-4">
-                  <p className="text-gray-700 text-lg leading-relaxed">{primaryProfile.steps_to_exit}</p>
-                </div>
+                <Accordion type="single" collapsible className="space-y-4">
+                  {exitSteps.map((step, index) => (
+                    <AccordionItem 
+                      key={index} 
+                      value={`step-${index}`} 
+                      className="border-0 bg-gradient-to-r from-persona-orange/10 to-persona-pink/10 rounded-lg overflow-hidden"
+                    >
+                      <AccordionTrigger className="px-6 py-4 hover:no-underline">
+                        <div className="flex items-center gap-4">
+                          <div className="w-8 h-8 rounded-full bg-persona-gradient flex items-center justify-center text-white font-medium">
+                            {index + 1}
+                          </div>
+                          <h4 className="text-left font-medium text-gray-800">{step.title}</h4>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="px-6 pb-4 pt-0 pl-18">
+                        <div className="ml-12">
+                          <p className="text-gray-700 leading-relaxed">{step.description}</p>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
               </div>
             </div>
           </div>
@@ -261,20 +350,24 @@ const Result = () => {
           </div>
         )}
         
-        {/* Secondary profiles with improved card design */}
+        {/* Secondary profiles with enhanced gradient styling */}
         <h3 className="text-2xl font-bold text-center mt-12 mb-6 text-transparent bg-clip-text bg-persona-gradient">
           Seus perfis secundários são:
         </h3>
         
-        <div className="grid gap-8 md:grid-cols-2 mb-16">
-          <ResultCard 
-            profile={placeholderProfile}
-            isLocked={true}
-          />
-          <ResultCard 
-            profile={placeholderProfile}
-            isLocked={true}
-          />
+        <div className="bg-gradient-to-r from-persona-orange to-persona-pink p-[3px] rounded-xl shadow-lg mb-16">
+          <div className="bg-white rounded-lg p-6">
+            <div className="grid gap-8 md:grid-cols-2">
+              <ResultCard 
+                profile={placeholderProfile}
+                isLocked={true}
+              />
+              <ResultCard 
+                profile={placeholderProfile}
+                isLocked={true}
+              />
+            </div>
+          </div>
         </div>
         
         {/* WhatsApp invite */}
