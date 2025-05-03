@@ -24,12 +24,11 @@ const ResultCard: React.FC<ResultCardProps> = ({ profile, isPrimary = false, isL
       <div className="absolute bottom-0 right-0 w-16 h-16 bg-gradient-to-tl from-persona-pink/20 to-transparent rounded-tl-3xl" />
       
       {isLocked && (
-        <div className="absolute inset-0 backdrop-blur-sm flex flex-col items-center justify-center z-10 bg-gradient-to-br from-white/70 via-white/80 to-gray-100/70 rounded-lg">
-          <div className="p-3 rounded-full bg-gradient-to-r from-persona-orange to-persona-pink mb-3 shadow-lg">
+        <div className="absolute inset-0 backdrop-blur-sm flex flex-col items-center justify-center z-10 bg-gradient-to-br from-white/80 to-gray-100/80 rounded-lg">
+          <div className="p-3 rounded-full bg-gradient-to-r from-persona-orange to-persona-pink mb-3">
             <Lock className="h-6 w-6 text-white" />
           </div>
-          <p className="font-semibold text-gray-800 text-lg">Disponível para Assinantes</p>
-          <div className="mt-2 text-sm text-gray-500">Conheça os planos premium</div>
+          <p className="font-semibold text-gray-700 text-lg">Disponível para Assinantes</p>
         </div>
       )}
       
