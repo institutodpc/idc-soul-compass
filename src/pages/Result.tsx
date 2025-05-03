@@ -11,6 +11,7 @@ import LoadingState from "@/components/results/LoadingState";
 import ProfileHeader from "@/components/results/ProfileHeader";
 import ProfileFormation from "@/components/results/ProfileFormation";
 import ProfileRefuge from "@/components/results/ProfileRefuge";
+import ProfileBiblicalCharacter from "@/components/results/ProfileBiblicalCharacter";
 import ProfileCommonPains from "@/components/results/ProfileCommonPains";
 import ProfileExitSteps from "@/components/results/ProfileExitSteps";
 import ProfileSummary from "@/components/results/ProfileSummary";
@@ -128,6 +129,10 @@ const Result = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
               <ProfileRefuge profile={primaryProfile} />
+              <ProfileBiblicalCharacter profile={primaryProfile} />
+            </div>
+            
+            <div className="mb-16">
               <ProfileCommonPains profile={primaryProfile} />
             </div>
             

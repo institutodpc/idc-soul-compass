@@ -54,8 +54,8 @@ const ProfileExitSteps: React.FC<ProfileExitStepsProps> = ({ profile }) => {
   
   return (
     <div className="mb-16">
-      <div className="bg-gradient-to-r from-persona-orange to-persona-pink p-[3px] rounded-xl shadow-lg">
-        <div className="bg-white rounded-lg p-8">
+      <div className="bg-gradient-to-r from-persona-orange to-persona-pink p-[3px] rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <div className="bg-white rounded-lg p-8 backdrop-blur-sm">
           <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-persona-gradient text-center mb-8">
             O QUE PRECISA FAZER PARA SAIR DESSE PERFIL
           </h3>
@@ -65,17 +65,19 @@ const ProfileExitSteps: React.FC<ProfileExitStepsProps> = ({ profile }) => {
               <AccordionItem 
                 key={index} 
                 value={`step-${index}`} 
-                className="border-0 bg-gradient-to-r from-persona-orange/10 to-persona-pink/10 rounded-lg overflow-hidden"
+                className="border-0 overflow-hidden"
               >
-                <AccordionTrigger className="px-6 py-4 hover:no-underline">
-                  <div className="flex items-center gap-4">
-                    <div className="w-8 h-8 rounded-full bg-persona-gradient flex items-center justify-center text-white font-medium">
-                      {index + 1}
+                <div className="bg-gradient-to-r from-persona-orange to-persona-pink p-[1px] rounded-lg">
+                  <AccordionTrigger className="px-6 py-4 hover:no-underline bg-white rounded-lg">
+                    <div className="flex items-center gap-4">
+                      <div className="w-8 h-8 rounded-full bg-persona-gradient flex items-center justify-center text-white font-medium">
+                        {index + 1}
+                      </div>
+                      <h4 className="text-left font-medium text-gray-800">{step.title}</h4>
                     </div>
-                    <h4 className="text-left font-medium text-gray-800">{step.title}</h4>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="px-6 pb-4 pt-0 pl-18">
+                  </AccordionTrigger>
+                </div>
+                <AccordionContent className="px-6 pb-4 pt-2 pl-18 bg-white border border-t-0 border-gray-100 rounded-b-lg">
                   <div className="ml-12">
                     <p className="text-gray-700 leading-relaxed">{step.description}</p>
                   </div>
