@@ -4,7 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { MessageCircle } from "lucide-react";
 
-const WhatsAppInvite: React.FC = () => {
+interface WhatsAppInviteProps {
+  profileName?: string;
+}
+
+const WhatsAppInvite: React.FC<WhatsAppInviteProps> = ({ profileName }) => {
   return (
     <Card className="border-0 shadow-lg overflow-hidden relative bg-gradient-to-r from-green-50 to-green-100">
       {/* Decorative elements */}
@@ -20,7 +24,11 @@ const WhatsAppInvite: React.FC = () => {
         </h3>
       </CardHeader>
       <CardContent className="text-center relative z-10">
-        <p className="mb-6 text-gray-700">Junte-se ao nosso grupo para receber dicas e conteúdos exclusivos sobre seu perfil.</p>
+        <p className="mb-6 text-gray-700">
+          {profileName 
+            ? `Junte-se ao nosso grupo para receber dicas e conteúdos exclusivos sobre o perfil ${profileName}.`
+            : "Junte-se ao nosso grupo para receber dicas e conteúdos exclusivos sobre seu perfil."}
+        </p>
         <Button 
           className="bg-green-600 hover:bg-green-700 py-6 px-8 text-base font-medium shadow-md transition-all duration-300 hover:shadow-lg hover:scale-[1.02]"
           onClick={() => window.open("https://whatsapp.com/channel/0029VbAfmlsDp2Q5WBtB4A3t", "_blank")}

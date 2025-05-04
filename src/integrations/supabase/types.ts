@@ -55,6 +55,32 @@ export type Database = {
           },
         ]
       }
+      profile_hierarchy: {
+        Row: {
+          dominance_level: string
+          hierarchy_position: number
+          profile_id: number
+        }
+        Insert: {
+          dominance_level: string
+          hierarchy_position: number
+          profile_id: number
+        }
+        Update: {
+          dominance_level?: string
+          hierarchy_position?: number
+          profile_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_hierarchy_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profile_weights: {
         Row: {
           profile_id: number | null
@@ -192,6 +218,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calcular_perfil_dominante: {
+        Args: { usuario_id: string }
+        Returns: {
+          perfil_id: string
+          nome: string
+          categoria: string
+          pontuacao_total: number
+          nivel_alerta: string
+        }[]
+      }
       calcular_perfis: {
         Args: { user_uuid: string }
         Returns: {

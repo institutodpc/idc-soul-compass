@@ -19,13 +19,6 @@ const Result = () => {
   const navigate = useNavigate();
   const [primaryProfile, setPrimaryProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  
-  // Placeholder profiles for the locked cards
-  const placeholderProfile: Profile = {
-    id: 0,
-    name: "Perfil Secundário",
-    description: "Este é um perfil secundário disponível apenas para assinantes."
-  };
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -47,7 +40,7 @@ const Result = () => {
           console.error("Erro ao buscar respostas:", answersError);
         }
 
-        // Call the calcular_perfis RPC function
+        // Call the calcular_perfis RPC function - now returns only one profile
         console.log("Calling calcular_perfis for user:", user.id);
         const { data: profileResults, error: rpcError } = await supabase
           .rpc('calcular_perfis', { user_uuid: user.id });
@@ -59,12 +52,12 @@ const Result = () => {
 
         console.log("Profile results:", profileResults);
         if (!profileResults || profileResults.length === 0) {
-          toast.error("Não foi possível calcular seus perfis. Tente novamente.");
+          toast.error("Não foi possível calcular seu perfil. Tente novamente.");
           navigate("/quiz");
           return;
         }
 
-        // Get profile details for the calculated profile IDs
+        // Get profile details for the calculated profile ID
         const primaryProfileId = profileResults[0].profile_id;
         console.log("Primary Profile ID:", primaryProfileId);
         
@@ -113,7 +106,7 @@ const Result = () => {
           <Logo className="mb-8" />
         </div>
         <div className="text-center bg-white p-6 rounded-xl shadow-lg">
-          <p className="text-lg">Calculando seus resultados...</p>
+          <p className="text-lg">Calculando seu resultado...</p>
         </div>
       </div>
     );
@@ -136,7 +129,7 @@ const Result = () => {
           <div className="relative z-10 p-8">
             {/* Main heading with elegant typography */}
             <h1 className="text-center text-2xl font-medium mb-2">
-              Seu perfil principal é:
+              Seu perfil é:
             </h1>
             
             {/* Profile name with gradient highlight */}
@@ -261,24 +254,10 @@ const Result = () => {
           </div>
         )}
         
-        {/* Secondary profiles with improved card design */}
-        <h3 className="text-2xl font-bold text-center mt-12 mb-6 text-transparent bg-clip-text bg-persona-gradient">
-          Seus perfis secundários são:
-        </h3>
-        
-        <div className="grid gap-8 md:grid-cols-2 mb-16">
-          <ResultCard 
-            profile={placeholderProfile}
-            isLocked={true}
-          />
-          <ResultCard 
-            profile={placeholderProfile}
-            isLocked={true}
-          />
-        </div>
-        
         {/* WhatsApp invite */}
-        <WhatsAppInvite />
+        {primaryProfile && (
+          <WhatsAppInvite profileName={primaryProfile.name} />
+        )}
       </div>
     </div>
   );
