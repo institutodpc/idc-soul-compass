@@ -13,6 +13,7 @@ export type Database = {
         Row: {
           created_at: string | null
           id: string
+          option_id: number | null
           question_id: number
           user_id: string
           value: number | null
@@ -20,6 +21,7 @@ export type Database = {
         Insert: {
           created_at?: string | null
           id?: string
+          option_id?: number | null
           question_id: number
           user_id: string
           value?: number | null
@@ -27,6 +29,7 @@ export type Database = {
         Update: {
           created_at?: string | null
           id?: string
+          option_id?: number | null
           question_id?: number
           user_id?: string
           value?: number | null
@@ -73,6 +76,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "fk_profile_hierarchy_profile"
+            columns: ["profile_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "profile_hierarchy_profile_id_fkey"
             columns: ["profile_id"]
             isOneToOne: true
@@ -97,12 +107,20 @@ export type Database = {
           question_id?: number
           weight?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_profile_weights_profile"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
           biblical_character: string | null
-          common_pains: string | null
+          common_pains: string[] | null
           descricao: string | null
           exaltation: string | null
           formation: string | null
@@ -110,11 +128,11 @@ export type Database = {
           nome: string | null
           prophetic_summary: string | null
           refuge: string | null
-          steps_to_exit: string | null
+          steps_to_exit: string[] | null
         }
         Insert: {
           biblical_character?: string | null
-          common_pains?: string | null
+          common_pains?: string[] | null
           descricao?: string | null
           exaltation?: string | null
           formation?: string | null
@@ -122,11 +140,11 @@ export type Database = {
           nome?: string | null
           prophetic_summary?: string | null
           refuge?: string | null
-          steps_to_exit?: string | null
+          steps_to_exit?: string[] | null
         }
         Update: {
           biblical_character?: string | null
-          common_pains?: string | null
+          common_pains?: string[] | null
           descricao?: string | null
           exaltation?: string | null
           formation?: string | null
@@ -134,7 +152,7 @@ export type Database = {
           nome?: string | null
           prophetic_summary?: string | null
           refuge?: string | null
-          steps_to_exit?: string | null
+          steps_to_exit?: string[] | null
         }
         Relationships: []
       }
@@ -156,6 +174,52 @@ export type Database = {
         }
         Relationships: []
       }
+      user_profile_scores: {
+        Row: {
+          created_at: string | null
+          id: string
+          profile_id: number
+          score: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          profile_id: number
+          score: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          profile_id?: number
+          score?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_user_profile_scores_profile"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_profile_scores_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_profile_scores_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_profiles: {
         Row: {
           created_at: string | null
@@ -164,6 +228,8 @@ export type Database = {
           last_quiz_date: string | null
           name: string
           quiz_count: number | null
+          top_profile_id: number | null
+          top_profile_score: number | null
           updated_at: string | null
           whatsapp: string
         }
@@ -174,6 +240,8 @@ export type Database = {
           last_quiz_date?: string | null
           name: string
           quiz_count?: number | null
+          top_profile_id?: number | null
+          top_profile_score?: number | null
           updated_at?: string | null
           whatsapp: string
         }
@@ -184,10 +252,27 @@ export type Database = {
           last_quiz_date?: string | null
           name?: string
           quiz_count?: number | null
+          top_profile_id?: number | null
+          top_profile_score?: number | null
           updated_at?: string | null
           whatsapp?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_user_profiles_profile"
+            columns: ["top_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_profiles_top_profile_id_fkey"
+            columns: ["top_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       users: {
         Row: {
@@ -234,6 +319,10 @@ export type Database = {
           profile_id: number
           score_normalizado: number
         }[]
+      }
+      finalizar_quiz: {
+        Args: { user_id: string }
+        Returns: undefined
       }
     }
     Enums: {

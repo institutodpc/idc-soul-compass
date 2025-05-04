@@ -75,8 +75,8 @@ export const fetchProfiles = async (): Promise<Profile[]> => {
     biblical_character: profile.biblical_character || '',
     exaltation: profile.exaltation || '',
     formation: profile.formation || '',
-    common_pains: profile.common_pains || '',
-    steps_to_exit: profile.steps_to_exit || '',
+    common_pains: profile.common_pains || [],
+    steps_to_exit: profile.steps_to_exit || [],
     prophetic_summary: profile.prophetic_summary || ''
   })) || [];
 };

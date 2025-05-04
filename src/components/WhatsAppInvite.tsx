@@ -26,7 +26,7 @@ const WhatsAppInvite: React.FC<WhatsAppInviteProps> = ({ profileName }) => {
       <CardContent className="text-center relative z-10">
         <p className="mb-6 text-gray-700">
           {profileName 
-            ? `Junte-se ao nosso grupo para receber dicas e conteúdos exclusivos sobre o perfil ${profileName}.`
+            ? `Junte-se ao nosso grupo para receber dicas e conteúdos exclusivos para o perfil ${profileName}.`
             : "Junte-se ao nosso grupo para receber dicas e conteúdos exclusivos sobre seu perfil."}
         </p>
         <Button 

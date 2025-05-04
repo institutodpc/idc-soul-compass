@@ -23,8 +23,8 @@ export interface Profile {
   biblical_character?: string;
   exaltation?: string;
   formation?: string;
-  common_pains?: string;
-  steps_to_exit?: string;
+  common_pains?: string[];
+  steps_to_exit?: string[];
   prophetic_summary?: string;
 }
 

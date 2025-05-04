@@ -8,6 +8,7 @@ import ResultCard from "@/components/ResultCard";
 import Logo from "@/components/Logo";
 import WhatsAppInvite from "@/components/WhatsAppInvite";
 import { useAuth } from "@/context/AuthContext";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 interface ProfileResult {
   profile_id: number;
@@ -82,8 +83,8 @@ const Result = () => {
           biblical_character: profileData.biblical_character || '',
           exaltation: profileData.exaltation || '',
           formation: profileData.formation || '',
-          common_pains: profileData.common_pains || '',
-          steps_to_exit: profileData.steps_to_exit || '',
+          common_pains: profileData.common_pains || [],
+          steps_to_exit: profileData.steps_to_exit || [],
           prophetic_summary: profileData.prophetic_summary || ''
         };
 
@@ -211,8 +212,19 @@ const Result = () => {
                 </h3>
                 
                 <div className="space-y-4">
-                  {primaryProfile.common_pains && (
-                    <p className="text-gray-700">{primaryProfile.common_pains}</p>
+                  {primaryProfile.common_pains && primaryProfile.common_pains.length > 0 ? (
+                    <ul className="space-y-3">
+                      {primaryProfile.common_pains.map((pain, index) => (
+                        <li key={index} className="flex items-start">
+                          <span className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-persona-orange/10 text-persona-orange mr-3 flex-shrink-0 mt-0.5">
+                            •
+                          </span>
+                          <span className="text-gray-700">{pain}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-gray-700">Informações não disponíveis.</p>
                   )}
                 </div>
               </div>
@@ -221,7 +233,7 @@ const Result = () => {
         )}
         
         {/* Steps to exit section with elegant styling */}
-        {primaryProfile && primaryProfile.steps_to_exit && (
+        {primaryProfile && primaryProfile.steps_to_exit && primaryProfile.steps_to_exit.length > 0 && (
           <div className="mb-16">
             <div className="bg-gradient-to-r from-persona-orange to-persona-pink p-[3px] rounded-xl shadow-lg">
               <div className="bg-white rounded-lg p-8">
@@ -229,9 +241,18 @@ const Result = () => {
                   O QUE PRECISA FAZER PARA SAIR DESSE PERFIL
                 </h3>
                 
-                <div className="space-y-4">
-                  <p className="text-gray-700 text-lg leading-relaxed">{primaryProfile.steps_to_exit}</p>
-                </div>
+                <Accordion type="single" collapsible className="w-full">
+                  {primaryProfile.steps_to_exit.map((step, index) => (
+                    <AccordionItem key={index} value={`item-${index}`}>
+                      <AccordionTrigger className="text-left text-gray-800 font-medium">
+                        Passo {index + 1}
+                      </AccordionTrigger>
+                      <AccordionContent className="text-gray-700">
+                        {step}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
               </div>
             </div>
           </div>
