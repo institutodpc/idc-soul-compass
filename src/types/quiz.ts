@@ -28,6 +28,12 @@ export interface Profile {
   prophetic_summary?: string;
 }
 
+export interface ProfileHierarchy {
+  profileId: number;
+  hierarchyPosition: number;
+  dominanceLevel: string;
+}
+
 export interface QuestionWeight {
   questionId: number;
   profileId: number;
@@ -39,9 +45,15 @@ export interface UserAnswer {
   value: AnswerValue;
 }
 
+export interface UserProfileScore {
+  profileId: number;
+  score: number;
+}
+
 export interface QuizResult {
   primaryProfile: Profile;
   secondaryProfiles: Profile[];
+  profileScores?: UserProfileScore[]; // Optional to not break existing code
 }
 
 export interface User {

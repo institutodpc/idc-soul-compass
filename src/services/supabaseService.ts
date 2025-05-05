@@ -1,6 +1,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { Question, Profile, QuestionWeight, UserAnswer, User, QuizResult } from "@/types/quiz";
+import { Question, Profile, QuestionWeight, UserAnswer, User, QuizResult, ProfileHierarchy, UserProfileScore } from "@/types/quiz";
 
 // Fetch questions from database
 export const fetchQuestions = async (): Promise<Question[]> => {
@@ -94,4 +94,57 @@ export const fetchProfileWeights = async (): Promise<QuestionWeight[]> => {
     profileId: weight.profile_id || 0,
     weight: weight.weight || 0
   })) || [];
+};
+
+// New function to fetch profile hierarchy
+export const fetchProfileHierarchy = async (): Promise<ProfileHierarchy[]> => {
+  const { data, error } = await supabase
+    .from('profile_hierarchy')
+    .select('*')
+    .order('hierarchy_position', { ascending: true });
+  
+  if (error) throw error;
+  
+  return data.map(hierarchy => ({
+    profileId: hierarchy.profile_id,
+    hierarchyPosition: hierarchy.hierarchy_position,
+    dominanceLevel: hierarchy.dominance_level
+  })) || [];
+};
+
+// New function to fetch user profile scores
+export const fetchUserProfileScores = async (userId: string): Promise<UserProfileScore[]> => {
+  const { data, error } = await supabase
+    .from('user_profile_scores')
+    .select('*')
+    .eq('user_id', userId);
+  
+  if (error) throw error;
+  
+  return data.map(score => ({
+    profileId: score.profile_id,
+    score: score.score
+  })) || [];
+};
+
+// New function to save user profile scores
+export const saveUserProfileScores = async (userId: string, scores: UserProfileScore[]): Promise<void> => {
+  // First delete existing scores for this user to avoid duplicates
+  const { error: deleteError } = await supabase
+    .from('user_profile_scores')
+    .delete()
+    .eq('user_id', userId);
+  
+  if (deleteError) throw deleteError;
+  
+  // Then insert the new scores
+  const { error } = await supabase
+    .from('user_profile_scores')
+    .insert(scores.map(score => ({
+      user_id: userId,
+      profile_id: score.profileId,
+      score: score.score
+    })));
+  
+  if (error) throw error;
 };

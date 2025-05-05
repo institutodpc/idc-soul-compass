@@ -2,23 +2,21 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Profile } from "@/types/quiz";
+import { Profile, UserProfileScore } from "@/types/quiz";
 import { toast } from "sonner";
 import ResultCard from "@/components/ResultCard";
 import Logo from "@/components/Logo";
 import WhatsAppInvite from "@/components/WhatsAppInvite";
+import ProfileScores from "@/components/ProfileScores";
 import { useAuth } from "@/context/AuthContext";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-
-interface ProfileResult {
-  profile_id: number;
-  score_normalizado: number;
-}
 
 const Result = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [primaryProfile, setPrimaryProfile] = useState<Profile | null>(null);
+  const [allProfiles, setAllProfiles] = useState<Profile[]>([]);
+  const [profileScores, setProfileScores] = useState<UserProfileScore[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -30,18 +28,33 @@ const Result = () => {
           return;
         }
 
-        // Verificar respostas existentes
-        const { data: answers, error: answersError } = await supabase
-          .from('answers')
-          .select('*')
-          .eq('user_id', user.id);
-
-        console.log("Respostas encontradas:", answers);
-        if (answersError) {
-          console.error("Erro ao buscar respostas:", answersError);
+        // Fetch all profiles for reference
+        const { data: profilesData, error: profilesError } = await supabase
+          .from('profiles')
+          .select('*');
+          
+        if (profilesError) {
+          console.error("Error fetching profiles:", profilesError);
+          throw profilesError;
         }
+        
+        // Map to our Profile type
+        const typedProfiles: Profile[] = profilesData.map(p => ({
+          id: p.id,
+          name: p.nome || '',
+          description: p.descricao || '',
+          refuge: p.refuge || '',
+          biblical_character: p.biblical_character || '',
+          exaltation: p.exaltation || '',
+          formation: p.formation || '',
+          common_pains: p.common_pains || [],
+          steps_to_exit: p.steps_to_exit || [],
+          prophetic_summary: p.prophetic_summary || ''
+        }));
+        
+        setAllProfiles(typedProfiles);
 
-        // Call the calcular_perfis RPC function - now returns only one profile
+        // Call the calcular_perfis RPC function
         console.log("Calling calcular_perfis for user:", user.id);
         const { data: profileResults, error: rpcError } = await supabase
           .rpc('calcular_perfis', { user_uuid: user.id });
@@ -62,33 +75,35 @@ const Result = () => {
         const primaryProfileId = profileResults[0].profile_id;
         console.log("Primary Profile ID:", primaryProfileId);
         
-        const { data: profileData, error: profileError } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', primaryProfileId)
-          .single();
-
-        if (profileError) {
-          console.error("Profile Error:", profileError);
-          throw profileError;
+        const primaryProfileData = typedProfiles.find(p => p.id === primaryProfileId);
+        
+        if (!primaryProfileData) {
+          toast.error("Perfil não encontrado.");
+          navigate("/quiz");
+          return;
         }
 
-        console.log("Fetched profile:", profileData);
-        // Map the profile data to our Profile type
-        const typedProfile: Profile = {
-          id: profileData.id,
-          name: profileData.nome || '',
-          description: profileData.descricao || '',
-          refuge: profileData.refuge || '',
-          biblical_character: profileData.biblical_character || '',
-          exaltation: profileData.exaltation || '',
-          formation: profileData.formation || '',
-          common_pains: profileData.common_pains || [],
-          steps_to_exit: profileData.steps_to_exit || [],
-          prophetic_summary: profileData.prophetic_summary || ''
-        };
-
-        setPrimaryProfile(typedProfile);
+        setPrimaryProfile(primaryProfileData);
+        
+        // Fetch user profile scores
+        try {
+          const { data: scoresData, error: scoresError } = await supabase
+            .from('user_profile_scores')
+            .select('profile_id, score')
+            .eq('user_id', user.id);
+            
+          if (scoresError) {
+            console.error("Error fetching profile scores:", scoresError);
+          } else if (scoresData) {
+            // Map to our UserProfileScore type
+            setProfileScores(scoresData.map(s => ({
+              profileId: s.profile_id,
+              score: s.score
+            })));
+          }
+        } catch (scoresError) {
+          console.error("Failed to fetch profile scores:", scoresError);
+        }
       } catch (error) {
         console.error("Error fetching results:", error);
         toast.error("Ocorreu um erro ao buscar seus resultados");
@@ -148,6 +163,16 @@ const Result = () => {
             )}
           </div>
         </div>
+        
+        {/* Profile scores section */}
+        {profileScores.length > 0 && allProfiles.length > 0 && (
+          <div className="mb-16">
+            <ProfileScores 
+              scores={profileScores} 
+              profiles={allProfiles} 
+            />
+          </div>
+        )}
         
         {/* Main results card with gradient border */}
         <div className="mb-16">

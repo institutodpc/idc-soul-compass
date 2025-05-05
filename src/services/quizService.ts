@@ -1,10 +1,12 @@
 
-import { UserAnswer, Profile, QuizResult } from "@/types/quiz";
-import { fetchProfiles, fetchProfileWeights, fetchQuestions } from "./supabaseService";
+import { UserAnswer, Profile, QuizResult, ProfileHierarchy, UserProfileScore } from "@/types/quiz";
+import { fetchProfiles, fetchProfileWeights, fetchQuestions, fetchProfileHierarchy, saveUserProfileScores } from "./supabaseService";
+import { supabase } from "@/integrations/supabase/client";
 
 let cachedProfiles: Profile[] | null = null;
 let cachedWeights: any[] | null = null;
 let cachedQuestions: any[] | null = null;
+let cachedProfileHierarchy: ProfileHierarchy[] | null = null;
 
 // Calculate quiz results based on user answers
 export const calculateResults = async (answers: UserAnswer[]): Promise<QuizResult> => {
@@ -15,13 +17,23 @@ export const calculateResults = async (answers: UserAnswer[]): Promise<QuizResul
   if (!cachedWeights) {
     cachedWeights = await fetchProfileWeights();
   }
+  if (!cachedProfileHierarchy) {
+    try {
+      cachedProfileHierarchy = await fetchProfileHierarchy();
+    } catch (error) {
+      console.error("Error fetching profile hierarchy:", error);
+      cachedProfileHierarchy = [];
+    }
+  }
 
   // Initialize scores for each profile
   const profileScores = cachedProfiles.map(profile => ({
     profile,
     score: 0,
     maxPossibleScore: getMaxPossibleScore(profile.id, cachedWeights),
-    normalizedScore: 0
+    normalizedScore: 0,
+    hierarchyPosition: cachedProfileHierarchy?.find(h => h.profileId === profile.id)?.hierarchyPosition || 999,
+    dominanceLevel: cachedProfileHierarchy?.find(h => h.profileId === profile.id)?.dominanceLevel || 'LOW'
   }));
 
   // Calculate raw scores
@@ -43,9 +55,30 @@ export const calculateResults = async (answers: UserAnswer[]): Promise<QuizResul
     }
   });
 
-  // Sort by normalized score
+  // Sort by normalized score, then by hierarchy position if scores are close
   const sortedProfiles = [...profileScores]
-    .sort((a, b) => b.normalizedScore - a.normalizedScore);
+    .sort((a, b) => {
+      // If scores are within 5% of each other, use hierarchy position
+      if (Math.abs(b.normalizedScore - a.normalizedScore) < 5) {
+        return a.hierarchyPosition - b.hierarchyPosition;
+      }
+      return b.normalizedScore - a.normalizedScore;
+    });
+
+  // Save scores to database
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const userProfileScores: UserProfileScore[] = sortedProfiles.map(p => ({
+        profileId: p.profile.id,
+        score: Math.round(p.normalizedScore)
+      }));
+      
+      await saveUserProfileScores(user.id, userProfileScores);
+    }
+  } catch (error) {
+    console.error("Failed to save user profile scores:", error);
+  }
 
   // Select primary profile
   const primaryProfile = sortedProfiles[0].profile;
@@ -56,9 +89,16 @@ export const calculateResults = async (answers: UserAnswer[]): Promise<QuizResul
     .slice(0, 2)
     .map(p => p.profile);
 
+  // Add profile scores to result
+  const profileScoresResult = sortedProfiles.map(p => ({
+    profileId: p.profile.id,
+    score: Math.round(p.normalizedScore)
+  }));
+
   return {
     primaryProfile,
-    secondaryProfiles
+    secondaryProfiles,
+    profileScores: profileScoresResult
   };
 };
 
