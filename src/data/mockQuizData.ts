@@ -1,3 +1,4 @@
+
 import { Question, Profile, QuestionWeight } from "@/types/quiz";
 
 // Sample questions data
@@ -49,8 +50,14 @@ export const mockProfiles: Profile[] = [
     biblical_character: "Jonas que fugiu de Nínive.",
     exaltation: "Quando Jonas se arrependeu e cumpriu sua missão.",
     formation: "Evitando responsabilidades e temendo falhar.",
-    common_pains: "Ansiedade, culpa por tarefas não cumpridas.",
-    steps_to_exit: "Divida tarefas grandes em pequenas e comece agora.",
+    common_pains: [
+      "Ansiedade", 
+      "Culpa por tarefas não cumpridas"
+    ],
+    steps_to_exit: [
+      "Divida tarefas grandes em pequenas",
+      "Comece agora"
+    ],
     prophetic_summary: "Deus está chamando você para agir hoje, não amanhã."
   },
   {
@@ -61,8 +68,15 @@ export const mockProfiles: Profile[] = [
     biblical_character: "Marta, preocupada com muitas coisas.",
     exaltation: "Quando aprendemos a descansar aos pés de Jesus como Maria.",
     formation: "Tentando controlar o incontrolável.",
-    common_pains: "Insônia, preocupação constante, medo do futuro.",
-    steps_to_exit: "Pratique exercícios de respiração e oração nos momentos de ansiedade.",
+    common_pains: [
+      "Insônia", 
+      "Preocupação constante", 
+      "Medo do futuro"
+    ],
+    steps_to_exit: [
+      "Pratique exercícios de respiração",
+      "Ore nos momentos de ansiedade"
+    ],
     prophetic_summary: "Deus já está no seu amanhã. Confie no tempo Dele."
   },
   {
@@ -73,8 +87,14 @@ export const mockProfiles: Profile[] = [
     biblical_character: "Paulo lutando contra o espinho na carne.",
     exaltation: "Quando Paulo compreendeu que na fraqueza a graça se aperfeiçoa.",
     formation: "Estabelecendo padrões irreais para si mesmo e para outros.",
-    common_pains: "Frustração constante, dificuldade em celebrar conquistas.",
-    steps_to_exit: "Estabeleça limites realistas para suas tarefas e celebre o progresso.",
+    common_pains: [
+      "Frustração constante", 
+      "Dificuldade em celebrar conquistas"
+    ],
+    steps_to_exit: [
+      "Estabeleça limites realistas para suas tarefas",
+      "Celebre o progresso"
+    ],
     prophetic_summary: "A graça de Deus é suficiente. Você não precisa ser perfeito."
   },
   // More profiles would be added in production
