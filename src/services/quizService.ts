@@ -27,14 +27,30 @@ export const calculateResults = async (answers: UserAnswer[]): Promise<QuizResul
   }
 
   // Initialize scores for each profile
-  const profileScores = cachedProfiles.map(profile => ({
-    profile,
-    score: 0,
-    maxPossibleScore: getMaxPossibleScore(profile.id, cachedWeights),
-    normalizedScore: 0,
-    hierarchyPosition: cachedProfileHierarchy?.find(h => h.profileId === profile.id)?.hierarchyPosition || 999,
-    dominanceLevel: cachedProfileHierarchy?.find(h => h.profileId === profile.id)?.dominanceLevel || 'LOW'
-  }));
+  const profileScores = cachedProfiles.map(profile => {
+    // Find hierarchy data for this profile
+    const hierarchyData = cachedProfileHierarchy?.find(h => h.profileId === profile.id);
+    const hierarchyPosition = hierarchyData?.hierarchyPosition || 999;
+    const dominanceLevel = hierarchyData?.dominanceLevel || 'LOW';
+    
+    // Calculate hierarchy weight factor based on dominance level
+    let hierarchyFactor = 1.0;
+    if (dominanceLevel === 'HIGH') {
+      hierarchyFactor = 1.2;
+    } else if (dominanceLevel === 'MEDIUM') {
+      hierarchyFactor = 1.1;
+    }
+
+    return {
+      profile,
+      score: 0,
+      maxPossibleScore: getMaxPossibleScore(profile.id, cachedWeights),
+      normalizedScore: 0,
+      hierarchyPosition: hierarchyPosition,
+      dominanceLevel: dominanceLevel,
+      hierarchyFactor: hierarchyFactor
+    };
+  });
 
   // Calculate raw scores
   answers.forEach(answer => {
@@ -48,18 +64,20 @@ export const calculateResults = async (answers: UserAnswer[]): Promise<QuizResul
     });
   });
 
-  // Calculate normalized scores
+  // Calculate normalized scores with hierarchy influence
   profileScores.forEach(profileScore => {
     if (profileScore.maxPossibleScore > 0) {
-      profileScore.normalizedScore = (profileScore.score / profileScore.maxPossibleScore) * 100;
+      // Apply hierarchy factor to influence the score
+      const baseScore = (profileScore.score / profileScore.maxPossibleScore) * 100;
+      profileScore.normalizedScore = Math.min(100, baseScore * profileScore.hierarchyFactor);
     }
   });
 
   // Sort by normalized score, then by hierarchy position if scores are close
   const sortedProfiles = [...profileScores]
     .sort((a, b) => {
-      // If scores are within 5% of each other, use hierarchy position
-      if (Math.abs(b.normalizedScore - a.normalizedScore) < 5) {
+      // Use a wider range (10%) for considering hierarchy position
+      if (Math.abs(b.normalizedScore - a.normalizedScore) < 10) {
         return a.hierarchyPosition - b.hierarchyPosition;
       }
       return b.normalizedScore - a.normalizedScore;
